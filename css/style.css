@@ -366,10 +366,12 @@ div[id=sous_categorie]:hover  > div > img {
 section[id=recettes]{
 	position:relative;	
 	float:left;
+	top: 100px;
 	width: 90%;
 	margin-left: 40px;
 	margin-right: 40px;
 }
+
 
 div[id=recette]{
 	width:1400px;
@@ -695,7 +697,8 @@ div[id=recherche_recettes]{
 	width:inherit;
 	height:	inherit;
 	top:60px;
-	border: 1px solid #000000;
+	border: 1px solid #E0E4E7;
+	padding-bottom: 40px;
 	color: black;
 	/*margin-bottom: 30px;*/
 	margin-right: 30px;
@@ -706,7 +709,7 @@ div[id=recherche_type_ingredient]{
 	float:left;
 	width:150px;
 	top:60px;
-	border: 1px solid #000000;
+	border: 0px solid #000000;
 	color: black;
 	background-color: #E0E4E7;
 	margin-bottom: 30px;
@@ -741,7 +744,7 @@ input[type=search]{
 	-webkit-border-radius:5px;
 	-moz-border-radius:5px;
 	border-radius:5px;
-	border:1px solid #ccc;
+	border:0px solid #ccc;
 	height:27px;
 	font-weight:bold;
 	padding-left:10px;
@@ -779,7 +782,7 @@ input[type="text"]{
   -moz-box-sizing: content-box;
   box-sizing: content-box;
   padding: 5px 20px;
-  border: 1px solid #b7b7b7;
+  border: 0px solid #b7b7b7;
   -webkit-border-radius: 10px;
   border-radius: 5px;
   color: rgba(0,0,0,1);
@@ -820,7 +823,7 @@ select{
     cursor: pointer;
     padding: 5px 15px;
     outline: 0;
-    border: 1px solid #b7b7b7;
+    border: 0px solid #b7b7b7;
     border-radius: 5px;
     background: $color--light-grey;
     color: $color--dark-grey;
@@ -883,11 +886,13 @@ div[class=titre_champ_recherche]{
 	position:relative;	
 	float:left;
 	/*background-color: #e0e4e7;*/
-	text-align: center;
+	color: #3E4156;
 }
 
-div[class=champ_recherche]{
-	text-align:center;
+div[class=champ_recherche_ingredient]{
+	  display: grid;
+	  grid-template-columns: repeat(6, 2fr);
+	  grid-gap: 10px;
 }
 
 div[id=type_ingredient]{

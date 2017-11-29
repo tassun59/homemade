@@ -200,7 +200,7 @@ if (isset($_POST['valider']))
 			<form method="post">
 				<div id="titre"><!--<?php echo $recettes_count;?>-->
 					<div class="titre_champ_recherche">
-						Titre :
+						Titre
 					</div>
 					<div class="champ_recherche">
 						<input type="text" name = "titre" id = "titre" value="<?php if (isset($_POST['titre']) && !empty($_POST['titre'])) echo $_POST['titre'];?>"/>
@@ -208,7 +208,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="categorie">
 					<div class="titre_champ_recherche">
-						Catégorie :
+						Catégorie
 					</div>
 					<div class="champ_recherche">
 						<select name = "categorie" id = "categorie" onchange="recup_sous_categorie('souscategorie', this.value);">
@@ -224,7 +224,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="sousCategorie">
 					<div class="titre_champ_recherche">
-						Sous-catégorie :
+						Sous-catégorie
 					</div>
 					<div id="souscategorie" class="champ_recherche">
 						<select name = "souscategorie" id = "souscategorie">
@@ -234,7 +234,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="theme">
 					<div class="titre_champ_recherche">
-						Type d'évènement :
+						Type d'évènement
 					</div>
 					<div class="champ_recherche">
 						<select name = "evenement" id = "evenement">
@@ -250,7 +250,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="favori">
 					<div class="titre_champ_recherche">
-						Favori :
+						Favori
 					</div>
 					<div class="champ_recherche">
 						<select name="favori" id="favori">
@@ -262,7 +262,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="tag">
 					<div class="titre_champ_recherche">
-						Mots-clés :
+						Mots-clés
 					</div>
 					<div class="champ_recherche">
 						<input type="text" name = "tag" id = "tag" value="<?php if (isset($_POST['tag']) && !empty($_POST['tag'])) echo $_POST['tag'];?>"/>
@@ -270,7 +270,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="niveau">
 					<div class="titre_champ_recherche">
-						Niveau de difficulté :
+						Niveau de difficulté
 					</div>
 					<div class="champ_recherche">
 						<select name = "niveau" id = "niveau">
@@ -286,7 +286,7 @@ if (isset($_POST['valider']))
 				</div>
 				<div id="budget">
 					<div class="titre_champ_recherche">
-						Budget :
+						Budget
 					</div>
 					<div class="champ_recherche">
 						<select name = "budget" id = "budget">
@@ -304,9 +304,9 @@ if (isset($_POST['valider']))
 					<!--  REQUETE POUR LA RECHERCHE D'INGREDIENTS
 					select rec_id from (select count(1) nb_ing, c.rec_id from (SELECT rec_id, ing_id FROM `t_recette_ingredients` WHERE ing_id in (3,14) group by rec_id, ing_id) c group by c.rec_id) d where d.nb_ing=2-->
 					<div class="titre_champ_recherche">
-						Ingrédients :
+						Ingrédients
 					</div>
-					<div class="champ_recherche">
+					<div class="champ_recherche_ingredient">
 					<input type="hidden" name="ingredients" id="ingredients" value=""/>
 					<input type="hidden" name="nbingredients" id="nbingredients" value=""/>
 						<?php
