@@ -455,3 +455,30 @@ function montrerCacher(id)
 	}
 	
 }
+
+
+
+
+
+
+function supprimer_image(filename, id_div, rec_id, id_parent){
+	
+	if (confirm("voulez-vous supprimer l'image?"))
+	{
+		var xhr = getXMLHttpRequest();
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+				delElem(id_parent, id_div);
+				afficher_info_bulle('infoBulle', 'result', xhr.responseText);
+
+			}
+		};
+
+		xhr.open("GET", "ajax/supprimer_image_recette.php?filename=" + filename + "&rec_id=" + rec_id, true);
+		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		xhr.send(null);
+	}
+}
+
+

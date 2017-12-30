@@ -354,111 +354,7 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 <script type="text/javascript" src="js/upload/jquery.form.min.js"></script>
 	
 	
-	<script type="text/javascript">
-$(document).ready(function() { 
-	var options = { 
-			target:   '#output',   // target element(s) to be updated with server response 
-			beforeSubmit:  beforeSubmit,  // pre-submit callback 
-			success:       afterSuccess,  // post-submit callback 
-			uploadProgress: OnProgress, //upload progress callback 
-			resetForm: true        // reset the form after successful submit 
-		}; 
-		
-	 $('#MyUploadForm').submit(function() { 
-			$(this).ajaxSubmit(options);  			
-			// always return false to prevent standard browser submit and page navigation 
-			return false; 
-		}); 
-		
 
-//function after succesful file upload (when server response)
-function afterSuccess()
-{
-	$('#submit-btn').show(); //hide submit button
-	$('#loading-img').hide(); //hide submit button
-	$('#progressbox').delay( 1000 ).fadeOut(); //hide progress bar
-
-}
-
-//function to check file size before uploading.
-function beforeSubmit(){
-    //check whether browser fully supports all File API
-   if (window.File && window.FileReader && window.FileList && window.Blob)
-	{
-		
-		if( !$('#FileInput').val()) //check empty input filed
-		{
-			$("#output").html("Are you kidding me?");
-			return false
-		}
-		
-		var fsize = $('#FileInput')[0].files[0].size; //get file size
-		var ftype = $('#FileInput')[0].files[0].type; // get file type
-		
-
-		//allow file types 
-		switch(ftype)
-        {
-            case 'image/png': 
-			case 'image/gif': 
-			case 'image/jpeg': 
-			case 'image/pjpeg':
-			case 'text/plain':
-			case 'text/html':
-			case 'application/x-zip-compressed':
-			case 'application/pdf':
-			case 'application/msword':
-			case 'application/vnd.ms-excel':
-			case 'video/mp4':
-                break;
-            default:
-                $("#output").html("<b>"+ftype+"</b> Unsupported file type!");
-				return false
-        }
-		
-		//Allowed file size is less than 5 MB (1048576)
-		/*if(fsize>5242880) 
-		{
-			$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
-			return false
-		}*/
-				
-		$('#submit-btn').hide(); //hide submit button
-		$('#loading-img').show(); //hide submit button
-		$("#output").html("");  
-	}
-	else
-	{
-		//Output error to older unsupported browsers that doesn't support HTML5 File API
-		$("#output").html("Please upgrade your browser, because your current browser lacks some new features we need!");
-		return false;
-	}
-}
-
-//progress bar function
-function OnProgress(event, position, total, percentComplete)
-{
-    //Progress bar
-	$('#progressbox').show();
-    $('#progressbar').width(percentComplete + '%') //update progressbar percent complete
-    $('#statustxt').html(percentComplete + '%'); //update status text
-    if(percentComplete>50)
-        {
-            $('#statustxt').css('color','#000'); //change status text to white after 50%
-        }
-}
-
-//function to format bites bit.ly/19yoIPO
-function bytesToSize(bytes) {
-   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-   if (bytes == 0) return '0 Bytes';
-   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-}
-
-}); 
-
-</script>
 	
 	
 <!-- Fin Upload fichier -->		
@@ -1160,18 +1056,172 @@ function bytesToSize(bytes) {
 						?>
 					</h3>
 				</header>
-				<div>
+				<div class="etape_recette" id="etape_recette">
+				
 				<?php
+				$ressources_images = glob($nom_dossier."/" . $recette_id . "/etapes/".$etapes_id."/*.jpg");
+						foreach ($ressources_images as $filename)
+						{
+							?>
+							<div id="photo<?php echo $filename; ?>">
+							<?php 
+							echo '<a class="photo_link" href="'.$filename.'" data-lightbox="etape'.$etapes_id.'"><img class="photo" src="'.$filename.'" alt=""/></a>';
+							?>
+							<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'image" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
+							</div>
+							<?php
+						}
+				
+			
 				if ($modifier == "O")
 				{
 					?>
-					<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
-					<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+					
+					<script type="text/javascript">
+						$(document).ready(function() { 
+							var options = { 
+									target:   '#output-<?php echo $etapes_id; ?>',   // target element(s) to be updated with server response 
+									beforeSubmit:  beforeSubmit,  // pre-submit callback 
+									success:       afterSuccess,  // post-submit callback 
+									uploadProgress: OnProgress, //upload progress callback 
+									resetForm: true        // reset the form after successful submit 
+								}; 
+								
+							 $('#MyUploadForm-<?php echo $etapes_id; ?>').submit(function() { 
+									$(this).ajaxSubmit(options);  			
+									// always return false to prevent standard browser submit and page navigation 
+									return false; 
+								}); 
+								
+
+						//function after succesful file upload (when server response)
+						function afterSuccess()
+						{
+							$('#submit-btn-<?php echo $etapes_id; ?>').show(); //hide submit button
+							$('#loading-img-<?php echo $etapes_id; ?>').hide(); //hide submit button
+							$('#progressbox-<?php echo $etapes_id; ?>').delay( 1000 ).fadeOut(); //hide progress bar
+
+						}
+
+						//function to check file size before uploading.
+						function beforeSubmit(){
+							//check whether browser fully supports all File API
+						   if (window.File && window.FileReader && window.FileList && window.Blob)
+							{
+								
+								if( !$('#FileInput-<?php echo $etapes_id; ?>').val()) //check empty input filed
+								{
+									$("#output-<?php echo $etapes_id; ?>").html("Are you kidding me?");
+									return false
+								}
+								
+								var fsize = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].size; //get file size
+								var ftype = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].type; // get file type
+								
+
+								//allow file types 
+								switch(ftype)
+								{
+									case 'image/png': 
+									case 'image/gif': 
+									case 'image/jpeg': 
+									case 'image/pjpeg':
+									case 'text/plain':
+									case 'text/html':
+									case 'application/x-zip-compressed':
+									case 'application/pdf':
+									case 'application/msword':
+									case 'application/vnd.ms-excel':
+									case 'video/mp4':
+										break;
+									default:
+										$("#output-<?php echo $etapes_id; ?>").html("<b>"+ftype+"</b> Unsupported file type!");
+										return false
+								}
+								
+								//Allowed file size is less than 5 MB (1048576)
+								/*if(fsize>5242880) 
+								{
+									$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
+									return false
+								}*/
+										
+								$('#submit-btn-<?php echo $etapes_id; ?>').hide(); //hide submit button
+								$('#loading-img-<?php echo $etapes_id; ?>').show(); //hide submit button
+								$("#output-<?php echo $etapes_id; ?>").html("");  
+							}
+							else
+							{
+								//Output error to older unsupported browsers that doesn't support HTML5 File API
+								$("#output-<?php echo $etapes_id; ?>").html("Please upgrade your browser, because your current browser lacks some new features we need!");
+								return false;
+							}
+						}
+
+						//progress bar function
+						function OnProgress(event, position, total, percentComplete)
+						{
+							//Progress bar
+							$('#progressbox-<?php echo $etapes_id; ?>').show();
+							$('#progressbar-<?php echo $etapes_id; ?>').width(percentComplete + '%') //update progressbar percent complete
+							$('#statustxt-<?php echo $etapes_id; ?>').html(percentComplete + '%'); //update status text
+							if(percentComplete>50)
+								{
+									$('#statustxt-<?php echo $etapes_id; ?>').css('color','#000'); //change status text to white after 50%
+								}
+						}
+
+						//function to format bites bit.ly/19yoIPO
+						function bytesToSize(bytes) {
+						   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+						   if (bytes == 0) return '0 Bytes';
+						   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+						   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+						}
+
+						}); 
+
+						</script>
+					
+					
+
+					
+					
+					
+					<div>
+						<h3>Ajax File Uploader</h3>
+							<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm-<?php echo $etapes_id; ?>">
+							<input name="FileInput-<?php echo $etapes_id; ?>" id="FileInput-<?php echo $etapes_id; ?>" type="file" />
+							<input name="FileOutput-<?php echo $etapes_id; ?>" id="FileOutput-<?php echo $etapes_id; ?>" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/etapes/<?php echo $etapes_id; ?>/"/>
+							<input name="Name_File_id-<?php echo $etapes_id; ?>" id="Name_File_id-<?php echo $etapes_id; ?>" type="hidden" value="<?php echo $etapes_id; ?>"/>
+							<input type="hidden" name="index" id="index" value="<?php echo $etapes_id; ?>" />
+							<input type="submit"  id="submit-btn-<?php echo $etapes_id; ?>" value="Upload" />
+							<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
+							</form>
+							<div id="progressbox-<?php echo $etapes_id; ?>" ><div id="progressbar-<?php echo $etapes_id; ?>"></div ><div id="statustxt-<?php echo $etapes_id; ?>">0%</div></div>
+							<div id="output-<?php echo $etapes_id; ?>"></div>
+					
+						<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
+						<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+					</div>
 				<?php
 				}
 				else
 				{
-					echo $etapes_description;
+					
+						
+					
+						
+
+						?>
+						<div>
+						<?php 
+						echo $etapes_description;
+						?>
+						</div>
+
+					<?php
+				
 				}
 				?>
 				</div>
@@ -1257,11 +1307,119 @@ function bytesToSize(bytes) {
 			</header>
 			<br/>
 			<div align="center">
+			
+					<script type="text/javascript">
+$(document).ready(function() { 
+	var options = { 
+			target:   '#output',   // target element(s) to be updated with server response 
+			beforeSubmit:  beforeSubmit,  // pre-submit callback 
+			success:       afterSuccess,  // post-submit callback 
+			uploadProgress: OnProgress, //upload progress callback 
+			resetForm: true        // reset the form after successful submit 
+		}; 
+		
+	 $('#MyUploadForm').submit(function() { 
+			$(this).ajaxSubmit(options);  			
+			// always return false to prevent standard browser submit and page navigation 
+			return false; 
+		}); 
+		
+
+//function after succesful file upload (when server response)
+function afterSuccess()
+{
+	$('#submit-btn').show(); //hide submit button
+	$('#loading-img').hide(); //hide submit button
+	$('#progressbox').delay( 1000 ).fadeOut(); //hide progress bar
+
+}
+
+//function to check file size before uploading.
+function beforeSubmit(){
+    //check whether browser fully supports all File API
+   if (window.File && window.FileReader && window.FileList && window.Blob)
+	{
+		
+		if( !$('#FileInput').val()) //check empty input filed
+		{
+			$("#output").html("Are you kidding me?");
+			return false
+		}
+		
+		var fsize = $('#FileInput')[0].files[0].size; //get file size
+		var ftype = $('#FileInput')[0].files[0].type; // get file type
+		
+
+		//allow file types 
+		switch(ftype)
+        {
+            case 'image/png': 
+			case 'image/gif': 
+			case 'image/jpeg': 
+			case 'image/pjpeg':
+			case 'text/plain':
+			case 'text/html':
+			case 'application/x-zip-compressed':
+			case 'application/pdf':
+			case 'application/msword':
+			case 'application/vnd.ms-excel':
+			case 'video/mp4':
+                break;
+            default:
+                $("#output").html("<b>"+ftype+"</b> Unsupported file type!");
+				return false
+        }
+		
+		//Allowed file size is less than 5 MB (1048576)
+		/*if(fsize>5242880) 
+		{
+			$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
+			return false
+		}*/
+				
+		$('#submit-btn').hide(); //hide submit button
+		$('#loading-img').show(); //hide submit button
+		$("#output").html("");  
+	}
+	else
+	{
+		//Output error to older unsupported browsers that doesn't support HTML5 File API
+		$("#output").html("Please upgrade your browser, because your current browser lacks some new features we need!");
+		return false;
+	}
+}
+
+//progress bar function
+function OnProgress(event, position, total, percentComplete)
+{
+    //Progress bar
+	$('#progressbox').show();
+    $('#progressbar').width(percentComplete + '%') //update progressbar percent complete
+    $('#statustxt').html(percentComplete + '%'); //update status text
+    if(percentComplete>50)
+        {
+            $('#statustxt').css('color','#000'); //change status text to white after 50%
+        }
+}
+
+//function to format bites bit.ly/19yoIPO
+function bytesToSize(bytes) {
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   if (bytes == 0) return '0 Bytes';
+   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+}
+
+}); 
+
+</script>
+			
 				<h3>Ajax File Uploader</h3>
 				<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm">
 				<input name="FileInput" id="FileInput" type="file" />
 				<input name="FileOutput" id="FileOutput" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/"/>
-				<input name="Recette_id" id="Recette_id" type="hidden" value="<?php echo $recette_id; ?>"/>
+				<input name="Name_File_id" id="Name_File_id" type="hidden" value="<?php echo $recette_id; ?>"/>
+				<input type="hidden" name="index"  id="index" value="0" />
 				<input type="submit"  id="submit-btn" value="Upload" />
 				<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
 				</form>
@@ -1275,10 +1433,14 @@ function bytesToSize(bytes) {
 				$ressources_images = glob($nom_dossier."/" . $recette_id . "/*.jpg");
 				foreach ($ressources_images as $filename)
 				{
-					echo '<a class="photo_link" href="'.$filename.'" data-lightbox="example-set"><img class="photo" src="'.$filename.'" alt=""/></a>';
-					echo '<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'astuce" onclick="alert(\'TODO\')"/>';
-				?>
+					?>
+					<div id="photo<?php echo $filename; ?>">
+					 
+					<a class="photo_link" href="<?php echo $filename; ?>" data-lightbox="example-set"><img class="photo" src="<?php echo $filename; ?>" alt=""/></a>
+					<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'astuce" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'photos');"/>
+				
 <input type="radio"  <?php if($filename == $recette_image_principale) { echo 'checked="checked"';} ?> name="rec_img_princ" id = "rec_img_princ" value="<?php echo $filename; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
+				</div>
 				<?php
 				}
 			?>

@@ -98,7 +98,7 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 		</div>
 		<div class="m_fond_recherche rad10">
 			<input name="accueil_input_recherche" type="text" id="accueil_input_recherche" placeholder="Parmi les recettes et vidéos">
-			<input type="image" name="Valid" id="Valid" src="images" onclick="alert('A METTRE EN PLACE');">
+			<input type="button" name="Valid" id="Valid" value="Valider" src="images" onclick="alert('A METTRE EN PLACE');">
 		</div>
 	</header>
 	<br/><br/>

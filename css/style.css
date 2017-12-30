@@ -505,6 +505,12 @@ div[id=ingredient]:hover{
 	box-shadow: 5px 7px 10px #999999;
 }
 
+div[class=etape_recette]{
+	display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 10px;
+}
+
 
 
 .div_niveau_liste, .div_budget_liste {

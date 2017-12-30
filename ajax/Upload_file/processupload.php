@@ -1,10 +1,37 @@
 <?php
+$index = $_POST['index'];
 
-if(isset($_FILES["FileInput"]) && $_FILES["FileInput"]["error"]== UPLOAD_ERR_OK)
+if($index == 0)
+{
+	$file_input = $_FILES["FileInput"];
+	$file_input_error = $_FILES["FileInput"]["error"];
+	$file_input_type = $_FILES['FileInput']['type'];
+	$file_input_tmp_name = $_FILES['FileInput']['tmp_name'];
+	$file_output = $_POST['FileOutput'];
+	$File_Name          = strtolower($_FILES['FileInput']['name']);
+	$File_Ext           = substr($File_Name, strrpos($File_Name, '.')); //get file extention
+	$Random_Number      = rand(0, 9999999999); //Random number to be added to name.
+	$NewFileName 		= $_POST['Name_File_id'].'_'.$Random_Number.$File_Ext; //new file name
+}
+else
+{
+	$file_input = $_FILES["FileInput-".$index];
+	$file_input_error = $_FILES["FileInput-".$index]["error"];
+	$file_input_type = $_FILES['FileInput-'.$index]['type'];
+	$file_input_tmp_name = $_FILES['FileInput-'.$index]['tmp_name'];
+	$file_output = $_POST['FileOutput-'.$index];
+	$File_Name          = strtolower($_FILES['FileInput-'.$index]['name']);
+	$File_Ext           = substr($File_Name, strrpos($File_Name, '.')); //get file extention
+	$Random_Number      = rand(0, 9999999999); //Random number to be added to name.
+	$NewFileName 		= $_POST['Name_File_id-'.$index].'_'.$Random_Number.$File_Ext; //new file name
+}
+
+
+if(isset($file_input) && $file_input_error== UPLOAD_ERR_OK)
 {
 	############ Edit settings ##############
 	//$UploadDirectory	= '../../ressources/1/'; //specify upload directory ends with / (slash)
-	$UploadDirectory	= $_POST['FileOutput']; //specify upload directory ends with / (slash)
+	$UploadDirectory	= $file_output; //specify upload directory ends with / (slash)
 	##########################################
 	
 	/*
@@ -25,7 +52,7 @@ if(isset($_FILES["FileInput"]) && $_FILES["FileInput"]["error"]== UPLOAD_ERR_OK)
 	}*/
 	
 	//allowed file type Server side check
-	switch(strtolower($_FILES['FileInput']['type']))
+	switch(strtolower($file_input_type))
 		{
 			//allowed file types
             case 'image/png': 
@@ -44,12 +71,27 @@ if(isset($_FILES["FileInput"]) && $_FILES["FileInput"]["error"]== UPLOAD_ERR_OK)
 				die('Unsupported File!'); //output error
 	}
 	
-	$File_Name          = strtolower($_FILES['FileInput']['name']);
-	$File_Ext           = substr($File_Name, strrpos($File_Name, '.')); //get file extention
-	$Random_Number      = rand(0, 9999999999); //Random number to be added to name.
-	$NewFileName 		= $_POST['Recette_id'].'_'.$Random_Number.$File_Ext; //new file name
 	
-	if(move_uploaded_file($_FILES['FileInput']['tmp_name'], $UploadDirectory.$NewFileName ))
+	
+	if (!file_exists($UploadDirectory)) {
+		//Créer un dossier 'fichiers/1/'
+		mkdir($UploadDirectory, 0777, true);
+	}
+	
+	
+	if($index != 0)
+	{
+		$ouverture=opendir($file_output);
+		$fichier=readdir($ouverture);
+		$fichier=readdir($ouverture);
+		while ($fichier=readdir($ouverture)) {
+		unlink($file_output.$fichier);
+		}
+		closedir($ouverture);
+	}
+	
+	
+	if(move_uploaded_file($file_input_tmp_name, $UploadDirectory.$NewFileName ))
 	   {
 		die('Success! File Uploaded.');
 	}else{
