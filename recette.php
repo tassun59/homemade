@@ -87,7 +87,7 @@ $sources = $result_t_sources->fetchAll(PDO::FETCH_ASSOC);
 
 
 //Récupération données étapes
-$result_t_recette_etapes = $bdd->query("select ETA_ID, ETA_DESCRIPTION FROM T_RECETTE_ETAPES where REC_ID = ".$recette_id."");
+$result_t_recette_etapes = $bdd->query("select ETA_ID, ETA_TITRE, ETA_DESCRIPTION, REC_ID_LIEN FROM T_RECETTE_ETAPES where REC_ID = ".$recette_id."");
 $etapes = $result_t_recette_etapes->fetchAll(PDO::FETCH_ASSOC);
 //$count_etapes = $result_t_recette_etapes->rowCount();
 $result_t_recette_etapes_max_id = $bdd->query("select max(ETA_ID) as MAX_ETAPE from T_RECETTE_ETAPES WHERE REC_ID = ".$recette_id."");
@@ -116,13 +116,13 @@ $result_t_ingredients = $bdd->query("select ING_ID, ING_LIBELLE FROM T_INGREDIEN
 $ingredients = $result_t_ingredients->fetchAll(PDO::FETCH_ASSOC);
 
 //Récupération données entete ingredient recette
-$result_t_recette_ingredient_entete = $bdd->query("select RIE_ID, REC_ID, RIE_LIBELLE from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id." order by RIE_ID");
+$result_t_recette_ingredient_entete = $bdd->query("select RIE_ID, REC_ID, RIE_LIBELLE, REC_ID_LIEN from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id." order by RIE_ID");
 $recette_ingredient_entete = $result_t_recette_ingredient_entete->fetchAll(PDO::FETCH_ASSOC);
 $result_t_recette_ingredient_entete_max_id = $bdd->query("select max(RIE_ID) as MAX_ENTETE from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id."");
 $recette_ingredient_entete_max_id = $result_t_recette_ingredient_entete_max_id->fetch(PDO::FETCH_ASSOC);
 
 //Récupération données ingredient recette
-$result_t_recette_ingredient = $bdd->query("select RIN_ID, RIE_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$recette_id." order by RIN_ID");
+$result_t_recette_ingredient = $bdd->query("select RIN_ID, RIE_ID, REC_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$recette_id." order by RIN_ID");
 $recette_ingredient = $result_t_recette_ingredient->fetchAll(PDO::FETCH_ASSOC);
 
 //Récupération données unite mesure
@@ -140,6 +140,10 @@ $recette_a_max_id = $result_t_recette_astuces_max_id->fetch(PDO::FETCH_OBJ);
 //Récupération données unite fabrication
 $result_t_unite_fabrication = $bdd->query("SELECT FAB_ID, FAB_LIBELLE FROM T_UNITE_FAB order by FAB_ID");
 $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
+
+// liste des recette techniques de base
+$result_t_recette_technique_base = $bdd->query("select REC_ID, REC_TITRE FROM T_RECETTE where REC_CATEGORIE=1 AND REC_ID != ".$recette_id."");
+$recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -620,7 +624,7 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 			<?php 
 			}
 			else
-			{echo $row_niveaux['NIV_ID'];
+			{
 			?>
 				<div class="div_niveau" title="<?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?>">
 					<div class="titre_niveau"><?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?></div>
@@ -858,10 +862,13 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 								</th>	
 							</tr>
 						<?php
+						$count_nb_ingredients = 0;
 						foreach ($recette_ingredient as $row_recette_ingredient)
 						{
+							
 							if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
 							{
+								$count_nb_ingredients = $count_nb_ingredients + 1;
 								// recuperation libele de l ingredient
 								foreach ($ingredients as $row_ingredients)
 								{
@@ -907,6 +914,26 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 						}
 					?>
 					</table>
+					<?php 
+						if ($count_nb_ingredients == 0 )
+						{
+							?>Lien vers technique de base : 
+							<select name="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)">
+							<option value="null"/>
+							<?php 
+							foreach ($recette_technique_base as $row_recette_technique_base)
+							{
+							?>
+								<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $row_recette_ingredient_entete['REC_ID_LIEN']) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
+							<?php 
+							}
+							?>
+						</select>
+						<?php 	
+						}
+					if($row_recette_ingredient_entete['REC_ID_LIEN'] == 0)
+					{					
+					?>
 					<table id="AjoutIngredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"><tr>
 								<td>
 									<input id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" type="hidden" id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"/>
@@ -950,7 +977,7 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 						</td>
 					<td/>
 							</tr>
-							<tr><td>&#160;</td></tr></table>
+							<tr><td>&#160;</td></tr></table><?php }	?>
 					</div>
 					<?php
 					}
@@ -966,36 +993,82 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 								<th colspan="2"><?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; ?></th>
 							</tr>
 						<?php
-						foreach ($recette_ingredient as $row_recette_ingredient)
+						
+						//on regarde par rapport à la recette ou la recette mis en lien en technique de base
+						if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
 						{
-							if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
+							//Récupération données ingredient recette
+							$result_t_recette_lien_ingredient = $bdd->query("select RIN_ID, RIE_ID, REC_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$row_recette_ingredient_entete['REC_ID_LIEN']." order by RIN_ID");
+							$recette_ingredient = $result_t_recette_lien_ingredient->fetchAll(PDO::FETCH_ASSOC);
+							foreach ($recette_ingredient as $row_recette_ingredient)
 							{
-								// recuperation libele de l ingredient
-								foreach ($ingredients as $row_ingredients)
-								{
-									$recette_ingredient_libelle = '';
-									if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+								
+								//on filtre les ingrédient liés à la recette
+								
+									// recuperation libele de l ingredient
+									foreach ($ingredients as $row_ingredients)
 									{
-										$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
-										break;
+										$recette_ingredient_libelle = '';
+										if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+										{
+											$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
+											break;
+										}
 									}
-								}
-								// recuperation libelle de l unite de mesure
-								foreach ($unite_mesure as $row_unite_mesure)
-								{
-									$unite_mesure_libelle = '';
-									if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+									// recuperation libelle de l unite de mesure
+									foreach ($unite_mesure as $row_unite_mesure)
 									{
-										$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
-										break;
+										$unite_mesure_libelle = '';
+										if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+										{
+											$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
+											break;
+										}
 									}
+									?>
+									<tr>
+										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
+										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE'].'&#160;'.$unite_mesure_libelle; ?></td>
+									</tr>
+								<?php
+
+							}
+						}
+						else
+						{
+							foreach ($recette_ingredient as $row_recette_ingredient)
+							{
+								
+								//on filtre les ingrédient liés à la recette
+								if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
+								{
+									// recuperation libele de l ingredient
+									foreach ($ingredients as $row_ingredients)
+									{
+										$recette_ingredient_libelle = '';
+										if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+										{
+											$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
+											break;
+										}
+									}
+									// recuperation libelle de l unite de mesure
+									foreach ($unite_mesure as $row_unite_mesure)
+									{
+										$unite_mesure_libelle = '';
+										if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+										{
+											$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
+											break;
+										}
+									}
+									?>
+									<tr>
+										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
+										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE'].'&#160;'.$unite_mesure_libelle; ?></td>
+									</tr>
+								<?php
 								}
-								?>
-								<tr>
-									<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-									<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE'].'&#160;'.$unite_mesure_libelle; ?></td>
-								</tr>
-							<?php
 							}
 						}
 						?>
@@ -1033,7 +1106,9 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($etapes as $row_etapes)
 		{
 			$etapes_id =  $row_etapes['ETA_ID'];
+			$etapes_titre =  $row_etapes['ETA_TITRE'];
 			$etapes_description =  $row_etapes['ETA_DESCRIPTION'];
+			$etapes_recette_lien =  $row_etapes['REC_ID_LIEN'];
 			
 			?>
 			<article id="Etape_<?php echo $etapes_id; ?>">
@@ -1046,7 +1121,20 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 						<?php 
 						}
 						?>
-						Etape <?php echo $etapes_id; ?></label>&#160;<?php if ($row_etapes != end($etapes)){?><img class="ordre" src="images/chevron_bas.png" title="Descendre l'étape" onclick="alert('descendre');"/><?php } ?><?php if ($row_etapes != reset($etapes)){?><img class="ordre" src="images/chevron_haut.png" title="Monter l'étape" onclick="alert('Monter');"/><?php } ?>
+						Etape <?php echo $etapes_id; ?>&#160;:&#160;</label>
+						<?php 
+						if ($modifier == "O")
+						{
+							?>
+							<input type="text" name="eta_titre-<?php echo $etapes_id; ?>" id="eta_titre-<?php echo $etapes_id; ?>" value=" <?php echo $etapes_titre; ?>" onchange="Update_champ_recette_etape('eta_titre-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"/>
+							<?php
+						}
+						else
+						{
+							echo $etapes_titre;
+						}
+						?>
+						&#160;<?php if ($row_etapes != end($etapes)){?><img class="ordre" src="images/chevron_bas.png" title="Descendre l'étape" onclick="alert('descendre');"/><?php } ?><?php if ($row_etapes != reset($etapes)){?><img class="ordre" src="images/chevron_haut.png" title="Monter l'étape" onclick="alert('Monter');"/><?php } ?>
 						<?php if ($modifier == "O")
 						{
 						?>
@@ -1066,11 +1154,18 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 							<div id="photo<?php echo $filename; ?>">
 							<?php 
 							echo '<a class="photo_link" href="'.$filename.'" data-lightbox="etape'.$etapes_id.'"><img class="photo" src="'.$filename.'" alt=""/></a>';
+							if ($modifier == "O")
+							{
+								?>
+								<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'image" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
+								
+								<?php
+							}
 							?>
-							<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'image" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
 							</div>
 							<?php
 						}
+						
 				
 			
 				if ($modifier == "O")
@@ -1202,7 +1297,21 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 							<div id="output-<?php echo $etapes_id; ?>"></div>
 					
 						<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
-						<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+						<?php
+						if($etapes_recette_lien == 0)
+						{
+							?>
+							<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+							<img class="lien_recette" src="images/lien_recette.png" title="Ajouter un lien à une technique de base" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
+							<?php
+						}
+						else
+						{
+							?>
+							<img class="lien_recette" src="images/broken-link.png" title="supprimer le lien vers la technique de base" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
+							<?php
+						}
+						?>
 					</div>
 				<?php
 				}

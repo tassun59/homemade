@@ -267,6 +267,7 @@ function Update_champ_recette_entete_ingredient(nom_champ, valeur, rec_id, rie_i
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
 			afficher_info_bulle('infoBulle', 'result', xhr.responseText);
+			
 		}
 	};
 
@@ -455,10 +456,6 @@ function montrerCacher(id)
 	}
 	
 }
-
-
-
-
 
 
 function supprimer_image(filename, id_div, rec_id, id_parent){
