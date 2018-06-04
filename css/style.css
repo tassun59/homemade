@@ -64,7 +64,7 @@ width:852px;
 
 /* fin css photo principale */
 
-.temps_preparation  {
+.temps_preparation, .categorie{
 position:relative;
 float:left;
 width:750px;
@@ -213,17 +213,14 @@ width: 35px;
 
 .lien_recette{
 top: 3px;
-width: 35px;
+width: 20px;
 -webkit-transition: all 0.125s ease-in;
 -moz-transition: all 0.125s ease-in;
 -o-transition: all 0.125s ease-in;
 opacity:0.5;
 }
 
-.lien_recette:hover{
-opacity:1;
-cursor: pointer;
-}
+
 
 .favori{
 width: 40px;
@@ -254,6 +251,11 @@ position:relative;
 float:left;
 width:95%;
 left:20px;
+}
+
+.sousEtape{
+top:20px;
+left:50px;
 }
 
 .colonne_ingredients{
@@ -431,7 +433,7 @@ div[id=contenu_recette]{
 	position:relative;	
 	float:left;
 	max-width: 80%;
-	left:10px; 	
+	padding-left:30px; 	
 }
 
 div[id=titre_recette]{
@@ -506,7 +508,7 @@ div[id=titre_ingredient]{
 	float:left;
 	width: 150px;
 	height: 50px;
-	left:5px;
+	padding-left:5px;
 	display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -514,6 +516,11 @@ div[id=titre_ingredient]{
     -webkit-align-items: center;
     -webkit-box-align: center;
     align-items: center;
+	background-color:#E0E4E7;
+}
+
+div[id=titre_ingredient]:hover{
+    background-color: #607D8B;
 }
 
 div[id=ingredient]:hover{
@@ -836,7 +843,7 @@ input[id^="rma_quantite"]{
 	width: 15px;
 }
 
-input[id^="rin_qte-"]{
+input[id^="rin_qte-"], input[id^="rec_id_lien_coeff-"]{
 	width: 30px;
 }
 

@@ -116,7 +116,7 @@ $result_t_ingredients = $bdd->query("select ING_ID, ING_LIBELLE FROM T_INGREDIEN
 $ingredients = $result_t_ingredients->fetchAll(PDO::FETCH_ASSOC);
 
 //Récupération données entete ingredient recette
-$result_t_recette_ingredient_entete = $bdd->query("select RIE_ID, REC_ID, RIE_LIBELLE, REC_ID_LIEN from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id." order by RIE_ID");
+$result_t_recette_ingredient_entete = $bdd->query("select RIE_ID, REC_ID, RIE_LIBELLE, REC_ID_LIEN, REC_ID_LIEN_COEFF from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id." order by RIE_ID");
 $recette_ingredient_entete = $result_t_recette_ingredient_entete->fetchAll(PDO::FETCH_ASSOC);
 $result_t_recette_ingredient_entete_max_id = $bdd->query("select max(RIE_ID) as MAX_ENTETE from T_RECETTE_INGREDIENTS_ENTETE WHERE REC_ID = ".$recette_id."");
 $recette_ingredient_entete_max_id = $result_t_recette_ingredient_entete_max_id->fetch(PDO::FETCH_ASSOC);
@@ -415,7 +415,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 					}
 				}
 		?>
-		<a href="#">Accueil</a> > <a href="#">Recettes</a> > <?php echo $recette_categorie_libelle; ?> > <?php echo $recette_sous_categorie_libelle; ?>
+		<a href="index.php">Accueil</a> > Recettes > <?php echo $recette_categorie_libelle; ?> > <?php echo $recette_sous_categorie_libelle; ?>
 	</nav>
 </div>
 <br/>
@@ -456,47 +456,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 	<br/><br/>
 	<section class="entete">
 		<article class="entete_recette">
-			<div class="source_recette">
-				Source : 
-				
-				
-				<?php 
-				
-				foreach ($sources as $row_sources)
-				{
-					if($row_sources['SRC_ID'] == $recette_id_source)
-					{
-						$source_libelle = $row_sources['SRC_LIBELLE'];
-						break;
-					}
-				}
-				
-					if ($modifier == 'O')
-					{
-					?>
-						&#160;Type de source : 
-						<select name="rec_id_source" id="rec_id_source" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-							<option/>
-							<?php 
-							foreach ($sources as $row_sources)
-							{
-							?>
-								<option value=<?php echo $row_sources['SRC_ID'];?> <?php if($row_sources['SRC_ID'] == $recette_id_source) { echo ' selected="selected"';} ?>> <?php echo $row_sources['SRC_LIBELLE']; ?></option>
-							<?php 
-							}
-							?>
-						</select>
-						<input type="text" name = "rec_lien_source" id = "rec_lien_source" value="<?php  echo $recette_lien_source; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
-					<?php
-					}
-					else
-					{
-					?>
-						<a class="lien_discret" href="<?php  echo  $recette_lien_source ?>" target="blank"><?php  echo $source_libelle; ?></a>
-					<?php 
-					}
-				?>
-			</div>
+			
 			<div class="photos_principales">
 				<section id="slideshow">
 					<div class="container">
@@ -713,32 +673,25 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						?>
 					</div>
 				</div>
-			</div>
-			
 				
-		</article>
-
 			</div>
-			</div>
-
-			
-		</article>
-		
-	</section>
-
-	<section class="categories">
-		<article>
-			<div>
-				<script>
-				$("body").on("change","#rec_sous_categorie",function(){
-					   alert("clicked");
-					});
-				</script>
+			<?php 
+				if ($modifier == 'O')
+				{
+			?>
+			<div class="categorie">
+				<header>
+					<h2>Categorie</h2>
+				</header>
+				<br/>
+				<div>
+					<script>
+					$("body").on("change","#rec_sous_categorie",function(){
+						   alert("clicked");
+						});
+					</script>
 				
-					<?php 
-						if ($modifier == 'O')
-						{
-					?>
+					
 							Catégorie:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 							<select name = "rec_categorie" id = "rec_categorie" required onchange="recup_sous_categorie('sous_categorie', this.value, <?php echo $recette_id; ?>);Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
 								<option/>
@@ -762,13 +715,70 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 								<?php	}
 								?>	
 							</select></span>
-					<?php 
-						}					
-					?> 
+					
 				</div>
+			</div>
+			<?php 
+				}					
+			?> 
+			<div class="categorie">
+				<header>
+					<h2>Source</h2>
+				</header>
+				<br/>
+				<div>
+					Source : 
+
+					<?php 
+					
+					foreach ($sources as $row_sources)
+					{
+						if($row_sources['SRC_ID'] == $recette_id_source)
+						{
+							$source_libelle = $row_sources['SRC_LIBELLE'];
+							break;
+						}
+					}
+					
+						if ($modifier == 'O')
+						{
+						?>
+							&#160;Type de source : 
+							<select name="rec_id_source" id="rec_id_source" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+								<option/>
+								<?php 
+								foreach ($sources as $row_sources)
+								{
+								?>
+									<option value=<?php echo $row_sources['SRC_ID'];?> <?php if($row_sources['SRC_ID'] == $recette_id_source) { echo ' selected="selected"';} ?>> <?php echo $row_sources['SRC_LIBELLE']; ?></option>
+								<?php 
+								}
+								?>
+							</select>
+							<input type="text" name = "rec_lien_source" id = "rec_lien_source" value="<?php  echo $recette_lien_source; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
+						<?php
+						}
+						else
+						{
+						?>
+							<a class="lien_discret" href="<?php  echo  $recette_lien_source ?>" target="blank"><?php  echo $source_libelle; ?></a>
+						<?php 
+						}
+					?>
+				</div>
+			</div>
+			
+				
 		</article>
+
+			</div>
+			</div>
+
+			
+		</article>
+		
 	</section>
-	
+
 	<section class="ingredients">
 		<article>
 			<br/>
@@ -919,7 +929,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						{
 							?>Lien vers technique de base : 
 							<select name="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)">
-							<option value="null"/>
+							<option value="0"/>
 							<?php 
 							foreach ($recette_technique_base as $row_recette_technique_base)
 							{
@@ -929,6 +939,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 							}
 							?>
 						</select>
+						<input type="text" name="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)" value=" <?php echo $row_recette_ingredient_entete['REC_ID_LIEN_COEFF']; ?>"/>
 						<?php 	
 						}
 					if($row_recette_ingredient_entete['REC_ID_LIEN'] == 0)
@@ -990,7 +1001,14 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						<div class="colonne_ingredients">
 						<table class="tableau_ingredient">
 							<tr>
-								<th colspan="2"><?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; ?></th>
+								<th colspan="2"><?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; 
+								if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
+								{
+									?>
+									<img class="lien_recette" src="images/link.png"/>
+									<?php
+								}
+								?></th>
 							</tr>
 						<?php
 						
@@ -1028,7 +1046,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 									?>
 									<tr>
 										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE'].'&#160;'.$unite_mesure_libelle; ?></td>
+										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE']*$row_recette_ingredient_entete['REC_ID_LIEN_COEFF'].'&#160;'.$unite_mesure_libelle; ?></td>
 									</tr>
 								<?php
 
@@ -1065,7 +1083,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 									?>
 									<tr>
 										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE'].'&#160;'.$unite_mesure_libelle; ?></td>
+										<td class="quantite_ingredient"><?php echo ($row_recette_ingredient['RIN_QTE']*1).'&#160;'.$unite_mesure_libelle; ?></td>
 									</tr>
 								<?php
 								}
@@ -1117,7 +1135,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						<?php if ($modifier == "N")
 						{
 						?>
-							<label><input type="checkbox"/>
+							<label><input type="checkbox" id="Checkbox_etape_<?php echo $etapes_id; ?>" onclick="Etape_realisee(this,<?php echo $etapes_id; ?>);"/>
 						<?php 
 						}
 						?>
@@ -1131,7 +1149,14 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						}
 						else
 						{
-							echo $etapes_titre;
+							echo $etapes_titre;echo '&#160;&#160;';
+							if($etapes_recette_lien != 0)
+							{
+								?>
+								<img class="lien_recette" src="images/link.png"/>
+								<?php
+							}
+							
 						}
 						?>
 						&#160;<?php if ($row_etapes != end($etapes)){?><img class="ordre" src="images/chevron_bas.png" title="Descendre l'étape" onclick="alert('descendre');"/><?php } ?><?php if ($row_etapes != reset($etapes)){?><img class="ordre" src="images/chevron_haut.png" title="Monter l'étape" onclick="alert('Monter');"/><?php } ?>
@@ -1297,35 +1322,63 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 							<div id="output-<?php echo $etapes_id; ?>"></div>
 					
 						<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
-						<?php
-						if($etapes_recette_lien == 0)
-						{
+						
+						
+						<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="document.getElementById('rec_id_lien-<?php echo $etapes_id; ?>').value=0;Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', 0, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+						<br/>
+						--OU--
+						<br/>
+						Lien vers technique de base : 
+							<select name="rec_id_lien-<?php echo $etapes_id;?>" id="rec_id_lien-<?php echo $etapes_id;?>" onchange="document.getElementById('eta_description-<?php echo $etapes_id; ?>').value='';Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', '', <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');">
+							<option value="null"/>
+							<?php 
+							foreach ($recette_technique_base as $row_recette_technique_base)
+							{
 							?>
-							<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
-							<img class="lien_recette" src="images/lien_recette.png" title="Ajouter un lien à une technique de base" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
-							<?php
-						}
-						else
-						{
+								<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $etapes_recette_lien) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
+							<?php 
+							}
 							?>
-							<img class="lien_recette" src="images/broken-link.png" title="supprimer le lien vers la technique de base" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
-							<?php
-						}
-						?>
+						</select>
+						
 					</div>
 				<?php
 				}
 				else
 				{
-					
-						
-					
-						
-
 						?>
 						<div>
 						<?php 
-						echo $etapes_description;
+						if($etapes_recette_lien == 0)
+						{
+							echo $etapes_description;
+						}
+						else
+						{	$i=0;
+							//Récupération données ingredient recette
+							$result_t_recette_lien_etapes = $bdd->query("select REC_ID, ETA_ID, ETA_TITRE, ETA_DESCRIPTION from T_RECETTE_ETAPES WHERE REC_ID = ".$etapes_recette_lien." order by ETA_ID");
+							$recette_lien_etapes = $result_t_recette_lien_etapes->fetchAll(PDO::FETCH_ASSOC);
+							foreach ($recette_lien_etapes as $row_recette_lien_etapes)
+							{
+								$i=$i+1;
+							?>
+								<div class="sousEtape">
+								<h4>
+							<?php
+								echo $i.'- '.$row_recette_lien_etapes['ETA_TITRE']; 
+							?>
+								</h4>
+							<?php
+								echo $row_recette_lien_etapes['ETA_DESCRIPTION']; 
+							?>
+								</br>
+								</br>
+								</div>
+							<?php
+							}
+						
+						}
+						
 						?>
 						</div>
 
@@ -1335,6 +1388,8 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 				?>
 				</div>
 			</article>
+			<br/>
+			<br/>
 			<br/>
 			<br/>
 		<?php

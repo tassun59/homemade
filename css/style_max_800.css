@@ -35,7 +35,7 @@ left:5%;
 width:100%;
 }
 
-.temps_preparation  {
+.temps_preparation , .categorie {
 position:relative;
 float:left;
 width:95%;

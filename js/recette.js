@@ -478,4 +478,18 @@ function supprimer_image(filename, id_div, rec_id, id_parent){
 	}
 }
 
-
+function Etape_realisee(checkox,etapes_id)
+{
+	if(checkox.checked == true)
+	{
+		document.getElementById("Etape_" + etapes_id).style.color="grey";
+		document.getElementById("Etape_" + etapes_id).style.textDecoration="line-through";
+		document.getElementById("Etape_" + etapes_id).style.opacity="0.5";
+	}
+	else
+	{
+		document.getElementById("Etape_" + etapes_id).style.color="initial";
+		document.getElementById("Etape_" + etapes_id).style.textDecoration="initial";
+		document.getElementById("Etape_" + etapes_id).style.opacity="initial";
+	}
+}
