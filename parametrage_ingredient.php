@@ -38,7 +38,8 @@
 	<link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="js/tooltipster/tooltipster.bundle.min.js"></script>
-	
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>
 	<!-- Style menu -->
 	<link rel="stylesheet" href="css/menu/style.css" type="text/css" media="screen">
 	
@@ -74,6 +75,8 @@
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+		
+		window.addEventListener("scroll", scrolled, false);
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script>
@@ -94,19 +97,13 @@
 
 <div id="infoBulle"></div>
 <div id="Resultat_Recherche"></div>
+<?php include('inc/bandeau_entete.inc.php'); ?>
 <div class="fil_ariane">
  	<nav>
-		<br/>
-		<br/>
 		<a href="#">Accueil</a> > <a href="#">Parametrage</a> > Ingrédients
 	</nav>
 </div>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+
 <br/>
 <br/>
  </header>
@@ -179,7 +176,7 @@
 				}
 				?>
 			</select>						
-			<img class="ajout" src="images/insertion.PNG" title="Ajouter la ligne" onclick="ajout_ligne_param_2_champs('Nlibelle', '<?php echo $v_chpLibelle; ?>', 'Nchamp2', '<?php echo $v_chpTypeIngredient; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>', liste_type_ingredient);"/>
+			<img class="ajout" src="images/insertion.png" title="Ajouter la ligne" onclick="ajout_ligne_param_2_champs('Nlibelle', '<?php echo $v_chpLibelle; ?>', 'Nchamp2', '<?php echo $v_chpTypeIngredient; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>', liste_type_ingredient);"/>
 					
 		</div>
 	</section>	

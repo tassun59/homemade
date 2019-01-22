@@ -1,0 +1,278 @@
+@font-face {
+    font-family: Lobster;
+    src: url(../font/Lobster_1.4.otf);
+}
+
+@font-face {
+    font-family: Comics Sans MS;
+    src: url(../font/comic-sans-ms.ttf);
+}
+
+div[class = fil_ariane]{
+position:relative;
+height:30px;
+top: 30px;
+left:5%;
+width:90%;
+text-align: center;
+}
+
+h1{font-size:32px;
+line-height:1.3em; 
+text-align:center;
+font-family:"Lobster", "Comics Sans MS";
+font-style: italic;
+}
+
+h2{font-size:24px;
+line-height:1.3em;
+text-align:center;
+font-family: "Comics Sans MS";
+font-style: italic;
+color:#D98B44;
+background-color: #f1e1c3;
+}
+
+h3{font-size:18px;
+line-height:1.3em;
+font-family:"Comics Sans MS";
+font-style: italic;
+color:#D98B44;
+}
+
+h4{font-size:16px;
+line-height:1.3em;
+text-align:center;
+font-family:"Comics Sans MS";
+font-style: italic;
+}
+
+h5{font-size:14px;
+text-align:center;
+font-family:"Comics Sans MS";
+font-style: italic;
+}
+h6{font-size:12px;
+text-align:center;
+font-family:"Comics Sans MS";
+font-style: italic;
+}
+
+
+.titre_recette{
+width:90%;
+left:5%;
+}
+
+.photos_principales{
+float: left;
+width:90%;
+left:5%;
+}
+
+.photos_principales > img{
+
+width:100%;
+}
+
+.temps_preparation  {
+position:relative;
+float:left;
+width:90%;
+margin:0 5% 5% 5%;
+height:100%;
+}
+
+.div_indicateur{
+float: left;
+width: 33%;
+}
+
+.div_niveau, .div_budget{
+float: left;
+height: 40px;
+width:100px;
+left:5%;
+}
+
+.image_indicateur, .image_niveau, .image_budget{
+position:relative;
+float: left;
+width:30px;
+}
+
+.semi_transparent{
+    opacity: 0.2;
+	filter: alpha(opacity=20);
+}
+
+.texte_indicateur{
+position:relative;
+float: left;
+width:70%;
+height: 40px;
+font-size: 18px;
+font-style: italic;
+font-family: "Comics Sans MS";
+top: 2px
+}
+
+.indicateur, .niveau, .budget{
+width: 30px;
+}
+
+.materiel{
+position:relative;
+float:left;
+width:90%;
+margin:0 5% 5% 5%;
+height:100%;
+}
+
+.colonne_materiel{
+position:relative;
+float: left;
+width:33%;
+}
+
+.etapes_recette, .ingredients, .bonus_recette, .source_recette, .astuce_remarque_recette, .tags_recette{
+position:relative;
+float:left;
+width:90%;
+margin:0 5% 5% 5%;
+}
+
+.colonne_video{
+position:relative;
+float: left;
+width:95%;
+}
+
+
+.video_recette{
+width:100%;
+}
+
+.astuce_remarque_recette h3, .tags_recette h3{
+font-size:18px;
+line-height:1.3em;
+font-family:"Comics Sans MS";
+font-style: italic;
+color:grey;
+}
+
+
+/*CSS photo principale*/
+
+#slideshow {
+	position: relative;
+	width: 490px;
+	height: 350px;
+	padding: 20px;
+	border: 1px solid #ddd;
+	margin: 0 auto 2em;
+	background: #FFF;
+	background: -webkit-linear-gradient(#FFF, #FFF 20%, #EEE 80%, #DDD);
+	background: -moz-linear-gradient(#FFF, #FFF 20%, #EEE 80%, #DDD);
+	background: -ms-linear-gradient(#FFF, #FFF 20%, #EEE 80%, #DDD);
+	background: -o-linear-gradient(#FFF, #FFF 20%, #EEE 80%, #DDD);
+	background: linear-gradient(#FFF, #FFF 20%, #EEE 80%, #DDD);
+	
+	-webkit-border-radius: 2px 2px 2px 2px;
+	-moz-border-radius: 2px 2px 2px 2px;
+	border-radius: 2px 2px 2px 2px;
+	
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0, 0.2);
+	-moz-box-shadow: 0 0 3px rgba(0,0,0, 0.2);
+	box-shadow: 0 0 3px rgba(0,0,0, 0.2);
+}
+
+/* avanced box-shadow : http://www.creativejuiz.fr/blog/les-tutoriels/ombre-avancees-avec-css3-et-box-shadow */
+#slideshow:before,
+#slideshow:after {
+	position: absolute;
+	display:block;
+	bottom:16px;
+	width: 50%;
+	height: 20px;
+	content: " ";
+	background: rgba(0,0,0,0.1);
+	
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+	
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0, 0.4), 0 20px 10px rgba(0,0,0, 0.7);
+	-moz-box-shadow: 0 0 3px rgba(0,0,0, 0.4), 0 20px 10px rgba(0,0,0, 0.7);
+	box-shadow: 0 0 3px rgba(0,0,0, 0.4), 0 20px 10px rgba(0,0,0, 0.7);
+	
+	z-index: -10;
+}
+#slideshow:before {
+	left:0;
+	-webkit-transform: rotate(-4deg);
+	-moz-transform: rotate(-4deg);
+	-ms-transform: rotate(-4deg);
+	-o-transform: rotate(-4deg);
+}
+#slideshow:after {
+	right:0;
+	-webkit-transform: rotate(4deg);
+	-moz-transform: rotate(4deg);
+	-ms-transform: rotate(4deg);
+	-o-transform: rotate(4deg);
+}
+
+
+#slideshow .container {
+	position:relative;
+	width: 450px;
+	height: 310px;
+	overflow: hidden;
+}
+
+
+#slideshow .c_slider {
+	position: absolute;
+	left:0; top:0;
+	width: 400%;
+	height: 310px;
+}
+
+
+#slideshow figure {
+	position:relative;
+	padding:0; margin:0;
+}
+
+#slideshow figure:after {
+	position: absolute;
+	display:block;
+	content: " ";
+	top:0; left:0;
+	width: 100%; height: 100%;
+	-webkit-box-shadow: 0 0 65px rgba(0,0,0, 0.5) inset;
+	-moz-box-shadow: 0 0 65px rgba(0,0,0, 0.5) inset;
+	box-shadow: 0 0 65px rgba(0,0,0, 0.5) inset;
+
+}
+
+/* fin css photo principale */
+
+/* Css lien photos supplémentaires */
+
+.photo_link {
+  display: inline-block;
+  padding: 2px;
+  margin: 0 0.5rem 1rem 0.5rem;
+  background-color: #fff;
+  line-height: 0;
+  border-radius: 4px;
+  transition: background-color 0.5s ease-out; }
+  .photo_link:hover {
+    background-color: #D98B44;
+    transition: none; }
+
+.photo {
+  width: 15rem;
+  border-radius: 4px; }

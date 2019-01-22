@@ -1,4 +1,4 @@
-<?php echo '<section id="recettes" class="recettes">'; ?>
+Ôªø<?php echo '<section id="recettes" class="recettes">'; ?>
 		<?php 
 
 			foreach ($recettes as $row_recettes)
@@ -13,7 +13,7 @@
 					$recette_tps_repos =  $row_recettes['REC_TPS_REPOS'];
 					$recette_tps_cuisson =  $row_recettes['REC_TPS_CUISSON'];
 					$recette_nb_convives =  $row_recettes['REC_NB_CONVIVES'];
-					$recette_nb_rÈalisations =  $row_recettes['REC_NB_REALISATIONS'];
+					$recette_nb_r√©alisations =  $row_recettes['REC_NB_REALISATIONS'];
 					$recette_date_creation =  $row_recettes['REC_DATE_CREATION'];
 					$recette_date_modif =  $row_recettes['REC_DATE_MODIF'];
 					$recette_id_evenement =  $row_recettes['REC_ID_EVENEMENT'];
@@ -24,7 +24,7 @@
 					$recette_favori =  $row_recettes['REC_FAVORI'];
 					$recette_image_principale =  $row_recettes['REC_IMG_PRINC'];
 					
-					//RÈcupÈration donnÈes budgets
+					//R√©cup√©ration donn√©es budgets
 					$result_t_budget = $bdd->prepare("select BUD_ID, BUD_LIBELLE FROM T_BUDGET where BUD_ID=:budget_id");
 					$result_t_budget->bindParam(":budget_id",$recette_budget);
 					$result_t_budget->execute();
@@ -33,25 +33,26 @@
 					
 
 
-					//RÈcupÈration donnÈes niveaux
+					//R√©cup√©ration donn√©es niveaux
 					$result_t_niveau = $bdd->prepare("select NIV_ID, NIV_LIBELLE FROM T_NIVEAU where NIV_ID=:niveau_id");
 					$result_t_niveau->bindParam(":niveau_id",$recette_niveau);
 					$result_t_niveau->execute();
 					$niveau = $result_t_niveau->fetch(PDO::FETCH_OBJ);
 					
 					?>
-						<?php echo '<a href="recette.php?recette_id='.$recette_id.'">
-							<div id="recette">
+						<?php 
+							echo '<div id="recette">
 								<div id="image_recette">
-									<img src="'.$recette_image_principale.'">
+									<a href="recette.php?recette_id='.$recette_id.'"><img src="'?> <?php if($recette_image_principale == '') {echo 'images/No_photo.png';} else {echo $recette_image_principale;} ?> <?php echo '"/>
+								</a>
 								</div>
 								<div id="contenu_recette">
 									<div id="titre_recette">'; ?>
-										<?php echo $row_recettes['REC_TITRE']; ?><?php if ($recette_favori != '1') {?> <?php echo '&#160;<img id="favori" class="favori_liste tooltip" src="images/favori_3.PNG" title="Favori"/>'; ?><?php } ?>
+										<?php echo '<a href="recette.php?recette_id='.$recette_id.'">'.$row_recettes['REC_TITRE'].'</a>'; ?><?php if ($recette_favori == '1') {?> <?php echo '&#160;<img id="favori" class="favori_liste tooltip" src="images/favori_3.png" title="Favori"/>'; ?><?php } ?>
 									<?php echo '</div>
-									<div id="indicateurs_recette">
+									<div id="indicateurs_recette_liste">
 										<div class="image_indicateur_liste">
-											<img alt="Temps de prÈparation" title="temps de prÈparation" class="image_indicateur_liste tooltip" src="images/temps3.PNG"/>
+											<img alt="Temps de pr√©paration" title="temps de pr√©paration" class="image_indicateur_liste tooltip" src="images/temps3.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;:'; ?>
 										<?php 
@@ -59,7 +60,7 @@
 										?> <?php echo '&#160;&#160;&#160;&#160;&#160;
 										</div>
 										<div class="image_indicateur_liste">
-											<img alt="Temps de repos" title="temps de repos" class="image_indicateur_liste tooltip" src="images/Temps_repos2.PNG"/>
+											<img alt="Temps de repos" title="temps de repos" class="image_indicateur_liste tooltip" src="images/Temps_repos2.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;: '; ?>
 											<?php 
@@ -67,7 +68,7 @@
 											?><?php echo '&#160;&#160;&#160;&#160;&#160;
 										</div>
 										<div class="image_indicateur_liste">
-											<img alt="Temps de cuisson" title="temps de cuisson" class="image_indicateur_liste tooltip" src="images/Temps_cuisson_2.PNG"/>
+											<img alt="Temps de cuisson" title="temps de cuisson" class="image_indicateur_liste tooltip" src="images/Temps_cuisson_2.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;: '; ?>
 											<?php 
@@ -94,10 +95,17 @@
 											</div>
 										</div>
 									</div>
-
+									<div id="nb_tests_recette">
+										<div align="center">
+											';?> <?php if($recette_nb_r√©alisations == null || $recette_nb_r√©alisations == 0)
+											{echo '<div><img class="nouvelle_recette" alt="Nouvelle recette" title="Nouvelle recette" class="tooltip" src="images/nouveau_1.png"/></div>';}
+										else
+											{echo '<div>R√©alis√©e </div><div class="font_bold">'.$recette_nb_r√©alisations.' </div><div>fois</div>';}?>
+										<?php echo '</div>
+									</div>
 								</div>
 							</div>
-						</a>'; ?>
+						'; ?>
 					<?php
 				}
 		?>

@@ -59,6 +59,28 @@ include('admin/sql.php');
 		$v_chpId = 'FAB_ID';
 		$v_chpLibelle = 'FAB_LIBELLE';
 	}
+	if($_GET['param'] == 'theme')
+	{
+		//Récupération données type source
+		$result_param = $bdd->prepare("select EVE_ID, EVE_TITRE FROM T_EVENEMENT order by EVE_ID;");
+		$result_param->execute();
+		$param = $result_param->fetchAll(PDO::FETCH_ASSOC);
+		
+		$v_table = 'T_EVENEMENT';
+		$v_chpId = 'EVE_ID';
+		$v_chpLibelle = 'EVE_TITRE';
+	}
+	if($_GET['param'] == 'categorie_tuto')
+	{
+		//Récupération données type source
+		$result_param = $bdd->prepare("select TCT_ID, TCT_LIBELLE FROM T_CATEGORIE_TUTO order by TCT_ID;");
+		$result_param->execute();
+		$param = $result_param->fetchAll(PDO::FETCH_ASSOC);
+		
+		$v_table = 'T_CATEGORIE_TUTO';
+		$v_chpId = 'TCT_ID';
+		$v_chpLibelle = 'TCT_LIBELLE';
+	}
 ?>
 
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
@@ -78,7 +100,8 @@ include('admin/sql.php');
 	<link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="js/tooltipster/tooltipster.bundle.min.js"></script>
-	
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>
 	<!-- Style menu -->
 	<link rel="stylesheet" href="css/menu/style.css" type="text/css" media="screen">
 	
@@ -114,6 +137,8 @@ include('admin/sql.php');
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+		
+		window.addEventListener("scroll", scrolled, false);
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script>
@@ -134,10 +159,9 @@ include('admin/sql.php');
 
 <div id="infoBulle"></div>
 <div id="Resultat_Recherche"></div>
+<?php include('inc/bandeau_entete.inc.php'); ?>
 <div class="fil_ariane">
  	<nav>
-		<br/>
-		<br/>
 		<a href="#">Accueil</a> > <a href="#">Parametrage</a> > 
 		<?php
 			if($_GET['param'] == 'type_ingredient')
@@ -160,15 +184,17 @@ include('admin/sql.php');
 			{
 				echo "Unités de fabrication";
 			}
+			if($_GET['param'] == 'theme')
+			{
+				echo "Thèmes";
+			}
+			if($_GET['param'] == 'categorie_tuto')
+			{
+				echo "Catégories des tutoriels";
+			}
 		?>
 	</nav>
 </div>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
 <br/>
 <br/>
  </header>
@@ -197,6 +223,14 @@ include('admin/sql.php');
 					if($_GET['param'] == 'unite_fabrication')
 					{
 						echo "des unités de fabrication";
+					}
+					if($_GET['param'] == 'theme')
+					{
+						echo "des thèmes";
+					}
+					if($_GET['param'] == 'categorie_tuto')
+					{
+						echo "des catégories de tutoriels";
 					}
 				?>
 			</h1>
@@ -234,6 +268,16 @@ include('admin/sql.php');
 						$id =  $row_param['FAB_ID'];
 						$libelle =  $row_param['FAB_LIBELLE'];
 					}
+					if($_GET['param'] == 'theme')
+					{
+						$id =  $row_param['EVE_ID'];
+						$libelle =  $row_param['EVE_TITRE'];
+					}
+					if($_GET['param'] == 'categorie_tuto')
+					{
+						$id =  $row_param['TCT_ID'];
+						$libelle =  $row_param['TCT_LIBELLE'];
+					}
 					
 					?>
 					<div id="ligne-<?php echo $id; ?>">
@@ -249,7 +293,7 @@ include('admin/sql.php');
 		</div>
 		<div id="ajout">
 			<input type="text" name="Nlibelle" id="Nlibelle"/>
-			<img class="ajout" src="images/insertion.PNG" title="Ajouter la ligne" onclick="ajout_ligne_param('Nlibelle', '<?php echo $v_chpLibelle; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>
+			<img class="ajout" src="images/insertion.png" title="Ajouter la ligne" onclick="ajout_ligne_param('Nlibelle', '<?php echo $v_chpLibelle; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>
 									
 					
 		</div>

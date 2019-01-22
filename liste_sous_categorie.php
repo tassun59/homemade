@@ -42,7 +42,8 @@ $sous_categories = $result_t_sous_categories->fetchAll(PDO::FETCH_ASSOC);
 	<link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="js/tooltipster/tooltipster.bundle.min.js"></script>
-	
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>
 	<!-- Style menu -->
 	<link rel="stylesheet" href="css/menu/style.css" type="text/css" media="screen">
 	
@@ -76,6 +77,8 @@ $sous_categories = $result_t_sous_categories->fetchAll(PDO::FETCH_ASSOC);
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+		
+		window.addEventListener("scroll", scrolled, false);
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script> 
@@ -88,27 +91,13 @@ $sous_categories = $result_t_sous_categories->fetchAll(PDO::FETCH_ASSOC);
 	 <?php include('inc/menu.inc.php'); ?>
 	 <!--end menu MainWrap-->
 
-<!-- Barre recherche -->
-<!--<div class="slider2 slider--right" id="right">
-  <p><input type="search"><input type ="button" id="button_search" value="Ok"/><a class="lien_discret" href="#">Recherche avancée ...<a/></p>
-</div>-->
-
+<?php include('inc/bandeau_entete.inc.php'); ?>
 
 <div class="fil_ariane">
  	<nav>
-		<br/>
-<br/>
 		<a href="#">Accueil</a> > <a href="#">Recettes</a> > <?php echo $categorie->CAT_TITRE; ?>
 	</nav>
 </div>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
  </header>
  <main>
 	<header>

@@ -94,12 +94,12 @@ $result_t_ingredients->bindParam(":type_ingredient",$v_type_ingredient);
 $result_t_ingredients->execute();
 $ingredient = $result_t_ingredients->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php include('inc/bandeau_entete.inc.php'); ?>
 <div class="fil_ariane">
  	<nav>
 		<br/>
 <br/>
-		<a href="#">Accueil</a> > <a href="#">Recettes</a> > <?php echo $type_ingredient->TIN_LIBELLE; ?>
+		<a href="#">Accueil</a> > <a href="#">Ingrédients</a> > <?php echo $type_ingredient->TIN_LIBELLE; ?>
 	</nav>
 </div>
 <br/>

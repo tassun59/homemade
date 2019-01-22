@@ -1,0 +1,148 @@
+ul.astuces > li {
+list-style: none;
+margin-left: 20px;
+}
+
+th{
+	font-weight: bolder;
+	font-style: italic;
+	font-size: 18px;
+	text-decoration: underline;
+}
+
+h2.titre_ardoise{font-size:32px;
+line-height:1.3em;
+text-align:center;
+font-family: "Comics Sans MS";
+font-style: italic;
+color:white;
+background: none ;
+}
+
+
+a.lien_discret:link, a.lien_discret:active, a.lien_discret:visited{
+	color:#AAAAAA;
+}
+
+a.lien_discret:hover{
+	color:grey;
+}
+
+.tableau_materiel, .tableau_ingredient{
+	width:100%;
+}
+
+.libelle_materiel, .libelle_ingredient{
+	width:60%;
+}
+
+.quantite_materiel{
+	width:40%;
+}
+
+.quantite_ingredient_lecture{
+	width:40px;
+}
+
+.libelle_ingredient{
+	width:350px;
+}
+
+.ajout{
+    position: relative;
+	top: 10px;
+	width: 30px;
+	cursor: pointer;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-webkit-transition: all 0.125s ease-in;
+	-moz-transition: all 0.125s ease-in;
+	-o-transition: all 0.125s ease-in;
+}
+
+.supprimer_petit{
+    position: relative;
+	right: 10px;
+	top: 3px;
+	width: 15px;
+	cursor: pointer;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-webkit-transition: all 0.125s ease-in;
+	-moz-transition: all 0.125s ease-in;
+	-o-transition: all 0.125s ease-in;
+}
+
+.ajout:hover, .supprimer_petit:hover{
+	opacity: 1;
+	filter: alpha(opacity=100);
+}
+
+.ajout_section_ingredient{
+    position: relative;
+	top: 5px;
+	width: 30px;
+	cursor: pointer;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-webkit-transition: all 0.125s ease-in;
+	-moz-transition: all 0.125s ease-in;
+	-o-transition: all 0.125s ease-in;
+}
+
+.ajout_section_ingredient:hover{
+	opacity: 1;
+	filter: alpha(opacity=100);
+}
+
+#infoBulle {
+	position: fixed;
+	top: 2%;
+	float: right;
+	right: 2%;
+	width: auto;
+	height: auto;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+	z-index:1000;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	border-radius:5px;
+	padding: 10px;
+	-webkit-transition: all 0.125s ease-in;
+	-moz-transition: all 0.125s ease-in;
+	-o-transition: all 0.125s ease-in;
+}
+
+.information {
+	color: #00529B;
+    background-color: #BDE5F8;
+}
+
+.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+
+.ordre{
+	width: 15px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	-webkit-transition: all 0.125s ease-in;
+	-moz-transition: all 0.125s ease-in;
+	-o-transition: all 0.125s ease-in;
+}
+
+.ordre:hover{
+	opacity: 1;
+	filter: alpha(opacity=100);
+	cursor: pointer;
+}

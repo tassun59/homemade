@@ -7,7 +7,7 @@ include('admin/sql.php');
 
 
 //Préparer la requête pour la liste de recette
-$result_t_recettes = $bdd->prepare("select REC_ID, REC_TITRE, REC_CATEGORIE, REC_SOUS_CATEGORIE, REC_NIVEAU, REC_BUDGET, REC_TPS_PREPA, REC_TPS_REPOS, REC_TPS_CUISSON, REC_NB_CONVIVES, REC_NB_REALISATIONS, REC_DATE_CREATION, REC_DATE_MODIF, REC_ID_EVENEMENT, REC_ID_LIEU, REC_TAG, REC_ID_SOURCE, REC_LIEN_SOURCE, REC_FAVORI FROM T_RECETTE order by REC_DATE_MODIF LIMIT 4");
+$result_t_recettes = $bdd->prepare("select REC_ID, REC_TITRE, REC_CATEGORIE, REC_SOUS_CATEGORIE, REC_NIVEAU, REC_BUDGET, REC_TPS_PREPA, REC_TPS_REPOS, REC_TPS_CUISSON, REC_NB_CONVIVES, REC_NB_REALISATIONS, REC_DATE_CREATION, REC_DATE_MODIF, REC_ID_EVENEMENT, REC_ID_LIEU, REC_TAG, REC_ID_SOURCE, REC_LIEN_SOURCE, REC_FAVORI,REC_IMG_PRINC FROM T_RECETTE order by REC_DATE_MODIF DESC LIMIT 7");
 $result_t_recettes->execute();
 $recettes = $result_t_recettes->fetchAll(PDO::FETCH_ASSOC);
 
@@ -36,6 +36,8 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 	<link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="js/tooltipster/tooltipster.bundle.min.js"></script>
+    <!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>
 	
 	<!-- Style menu -->
 	<link rel="stylesheet" href="css/menu/style.css" type="text/css" media="screen">
@@ -73,9 +75,19 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+
+
+window.addEventListener("scroll", scrolled, false);
+
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script> 
+	
+	
+	<link href="https://fonts.googleapis.com/css?family=Poor+Story" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Acme|Montserrat:700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Comfortaa|Kalam" rel="stylesheet">
 </head>
   
  <body>
@@ -92,27 +104,22 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 
  </header>
  <main>
-	<header>
-		<div id="accueil_recherche"style="background-image:url('ressources/1/DSC_1130.JPG')">
-			
-		</div>
-		<div class="m_fond_recherche rad10">
-			<input name="accueil_input_recherche" type="text" id="accueil_input_recherche" placeholder="Parmi les recettes et vidéos">
-			<input type="button" name="Valid" id="Valid" value="Valider" src="images" onclick="alert('A METTRE EN PLACE');">
-		</div>
-	</header>
-	<br/><br/>
+	<?php include('inc/bandeau_entete.inc.php'); ?>
+
 	<section id="Accueil_recettes" class="Accueil_recettes">
 		
 			<div id="accueil_recette_new">
 				<div id="accueil_contenu_recette_new">
-					<div>
+					<div id="accueil_titre_recette_new">
+						Créer une nouvelle recette
+					</div>
+					<div class="triangle_new"></div>
+					<div id="creation_recette">
 						<script>
 						$("body").on("change","#rec_sous_categorie",function(){
 							   alert("clicked");
 							});
 						</script>
-
 						Catégorie:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 						<select name ="rec_categorie" id = "rec_categorie" onchange="recup_sous_categorie('sous_categorie',this.value);">
 							<option/>
@@ -123,6 +130,8 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 							<?php	}
 							?>	
 						</select>
+						<br/>
+						<br/>
 						Sous-catégorie:&#160;
 						<span id="sous_categorie">
 							<select name = "rec_sous_categorie" id = "rec_sous_categorie">
@@ -130,8 +139,8 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 						</select></span>
 
 					</div>
-
-					<div id="titre_recette">
+					<br/>
+					<div id="bouton_creation_recette">
 						<a href="javascript:creer();">+ Ajouter une nouvelle recette</a>
 					</div>
 
@@ -162,6 +171,7 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 					$recette_id_source =  $row_recettes['REC_ID_SOURCE'];
 					$recette_lien_source =  $row_recettes['REC_LIEN_SOURCE'];
 					$recette_favori =  $row_recettes['REC_FAVORI'];
+					$recette_image_principale =  $row_recettes['REC_IMG_PRINC'];
 					
 					
 					//Récupération données budgets
@@ -180,18 +190,27 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 					$niveau = $result_t_niveau->fetch(PDO::FETCH_OBJ);
 					
 					?>
-						<a href="recette.php?recette_id=<?php echo $recette_id; ?>">
+						
 							<div id="accueil_recette">
+								
+								<div id="accueil_titre_recette">
+									<a href="recette.php?recette_id=<?php echo $recette_id; ?>"><?php echo $row_recettes['REC_TITRE']; ?></a>
+								</div>
+								<div id="accueil_favori">
+									<?php if ($recette_favori == '1')
+										echo'<img id="favori" class="favori tooltip" src="images/favori_3.png"/>';
+									?>
+								</div>
+								<div class="triangle"></div>
 								<div id="accueil_image_recette">
-									<img src="ressources/1/DSC_1130.JPG">
+									<a href="recette.php?recette_id=<?php echo $recette_id; ?>">
+										<img src="<?php if($recette_image_principale == '') {echo 'images/No_photo.png';} else {echo $recette_image_principale;} ?>"/>
+									</a>
 								</div>
 								<div id="accueil_contenu_recette">
-									<div id="accueil_titre_recette">
-										<?php echo $row_recettes['REC_TITRE']; ?>
-									</div>
 									<div id="indicateurs_recette">
 										<div class="image_indicateur_liste">
-											<img alt="Temps de préparation" title="temps de préparation" class="image_indicateur_liste tooltip" src="images/temps3.PNG"/>
+											<img alt="Temps de préparation" title="temps de préparation" class="image_indicateur_liste tooltip" src="images/temps3.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;: 
 										<?php 
@@ -199,7 +218,7 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 										?> &#160;&#160;&#160;&#160;&#160;
 										</div>
 										<div class="image_indicateur_liste">
-											<img alt="Temps de repos" title="temps de repos" class="image_indicateur_liste tooltip" src="images/Temps_repos2.PNG"/>
+											<img alt="Temps de repos" title="temps de repos" class="image_indicateur_liste tooltip" src="images/Temps_repos2.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;: 
 											<?php 
@@ -207,7 +226,7 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 											?>&#160;&#160;&#160;&#160;&#160;
 										</div>
 										<div class="image_indicateur_liste">
-											<img alt="Temps de cuisson" title="temps de cuisson" class="image_indicateur_liste tooltip" src="images/Temps_cuisson_2.PNG"/>
+											<img alt="Temps de cuisson" title="temps de cuisson" class="image_indicateur_liste tooltip" src="images/Temps_cuisson_2.png"/>
 										</div>
 										<div class="texte_indicateur_liste">&#160;: 
 											<?php 
@@ -234,10 +253,16 @@ $categories = $result_t_categories->fetchAll(PDO::FETCH_ASSOC);
 											</div>
 										</div>
 									</div>
-
+									<div id="nb_tests_recette">
+										<div align="center">
+											<?php if($recette_nb_réalisations == null || $recette_nb_réalisations == 0)
+											{echo '<div><img class="nouvelle_recette" alt="Nouvelle recette" title="Nouvelle recette" class="tooltip" src="images/nouveau_1.png"/></div>';}
+										else
+											{echo '<div>Réalisée </div><div class="font_bold">'.$recette_nb_réalisations.' </div><div>fois</div>';}?>
+										<?php echo '</div>';?>
+									</div>
 								</div>
 							</div>
-						</a>
 					<?php
 				}
 		

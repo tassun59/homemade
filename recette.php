@@ -58,7 +58,7 @@ while ($recette = $result_t_recette->fetch(PDO::FETCH_ASSOC))
 	$recette_tps_cuisson =  $recette['REC_TPS_CUISSON'];
 	$recette_nb_convives =  $recette['REC_NB_CONVIVES'];
 	$recette_uni_fab_id =  $recette['REC_UNI_FAB_ID'];
-	$recette_nb_réalisations =  $recette['REC_NB_REALISATIONS'];
+	$recette_nb_realisations =  $recette['REC_NB_REALISATIONS'];
 	$recette_date_creation =  $recette['REC_DATE_CREATION'];
 	$recette_date_modif =  $recette['REC_DATE_MODIF'];
 	$recette_id_evenement =  $recette['REC_ID_EVENEMENT'];
@@ -124,6 +124,8 @@ $recette_ingredient_entete_max_id = $result_t_recette_ingredient_entete_max_id->
 //Récupération données ingredient recette
 $result_t_recette_ingredient = $bdd->query("select RIN_ID, RIE_ID, REC_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$recette_id." order by RIN_ID");
 $recette_ingredient = $result_t_recette_ingredient->fetchAll(PDO::FETCH_ASSOC);
+$result_t_recette_ingredient_max_id = $bdd->query("select max(rin_id) as MAX_INGREDIENT from (select RIN_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$recette_id." union SELECT RIN_ID FROM T_RECETTE_INGREDIENTS_ENTETE  trie inner join T_RECETTE_INGREDIENTS tri on tri.rec_id=trie.rec_id_lien WHERE trie.rec_id=".$recette_id.") a");
+$recette_ingredient_max_id = $result_t_recette_ingredient_max_id->fetch(PDO::FETCH_ASSOC);
 
 //Récupération données unite mesure
 $result_t_unite_mesure = $bdd->query("SELECT UNI_ID, UNI_LIBELLE FROM T_UNITE order by UNI_ID");
@@ -194,7 +196,10 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript" ></script>-->
 
 	<!--slideshow-->
-	<link rel="stylesheet" href="css/slideshow/styles.css" />
+	<!--<link rel="stylesheet" href="css/slideshow/styles.css" />-->
+	
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>	
 	
 	 <!-- Jquery Tag-it -->
     <!--<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/reset-fonts/reset-fonts.css">
@@ -346,6 +351,8 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+		
+		window.addEventListener("scroll", scrolled, false);
     </script>
 	
 	
@@ -357,7 +364,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 	
 <script type="text/javascript" src="js/upload/jquery.form.min.js"></script>
 	
-	
+
 
 	
 	
@@ -385,15 +392,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
   <p><input type="search"><input type ="button" id="button_search" value="Ok"/><a class="lien_discret" href="#">Recherche avancée ...<a/></p>
 </div>-->
 
-<!-- Boutons action -->
-<div class="div_action">
- 	<div class="image_action"><a id="link" href="#"><img class="action tooltip" src="images/export2.PNG" title="Exporter"/></a></div>
-	<div class="image_action"><a id="link" href="#"><img class="action tooltip" src="images/mail2.PNG" title="Envoyer"/></a></div>
-	<?php if ($modifier == "N")	{ ?><div class="image_action"><a id="link" href="recette.php?recette_id=<?php echo $recette_id; ?>&modifier=O"><img class="action tooltip" src="images/modifier2.PNG" title="Modifier la recette"/></a></div><?php } ?>
-	<div class="image_action"><a id="link" href="#" onclick="javascript:window.print()"><img class="action tooltip" src="images/imprimer.PNG" title="Imprimer"/></a></div>
-	<?php if ($modifier == "O")	{ ?><div class="image_action"><a id="link" href="recette.php?recette_id=<?php echo $recette_id; ?>"><img class="action tooltip" src="images/retour2.PNG" title="Retour en consultation"/></a></div><?php } ?>
-	<div class="image_action"><a id="link" href="#"><img class="supprimer tooltip" src="images/annuler.PNG" title="Supprimer la recette"/></a></div>
-</div>
+	 <?php include('inc/bandeau_entete.inc.php'); ?>
 
 <div class="fil_ariane">
  	<nav>
@@ -418,1243 +417,1268 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 		<a href="index.php">Accueil</a> > Recettes > <?php echo $recette_categorie_libelle; ?> > <?php echo $recette_sous_categorie_libelle; ?>
 	</nav>
 </div>
+<!-- Boutons action -->
+<div class="div_action">
+ 	<div class="image_action"><a id="link" href="#"><img class="action tooltip" src="images/export2.png" title="Exporter"/></a></div>
+	<div class="image_action"><a id="link" href="#"><img class="action tooltip" src="images/mail2.png" title="Envoyer"/></a></div>
+	<?php if ($modifier == "N")	{ ?><div class="image_action"><a id="link" href="recette.php?recette_id=<?php echo $recette_id; ?>&modifier=O"><img class="action tooltip" src="images/modifier2.png" title="Modifier la recette"/></a></div><?php } ?>
+	<div class="image_action"><a id="link" href="#" onclick="javascript:window.print()"><img class="action tooltip" src="images/imprimer.png" title="Imprimer"/></a></div>
+	<?php if ($modifier == "O")	{ ?><div class="image_action"><a id="link" href="recette.php?recette_id=<?php echo $recette_id; ?>"><img class="action tooltip" src="images/retour2.png" title="Retour en consultation"/></a></div><?php } ?>
+	<div class="image_action"><a id="link" href="#"><img class="supprimer tooltip" src="images/annuler.png" title="Supprimer la recette"/></a></div>
+</div>
+
 <br/>
 <br/>
 <br/>
 <br/>
 <br/>
  </header>
- <main>
-	<header>
-		<div class="titre_recette">
-			<h1>
+ <div id="tableau_recette">
+	 <div id="informations_recette">
+		<header>
+				<h2>Informations</h2>
+		</header>
+		<div id="div_niveau_recette">
+			<?php 
+			
+				foreach ($niveaux as $row_niveaux)
+				{
+					if($row_niveaux['NIV_ID'] == $recette_niveau)
+					{
+						$niveau_libelle = $row_niveaux['NIV_LIBELLE'];
+					}
+				}
 				
-				<?php if ($modifier == 'O')
+				foreach ($budgets as $row_budgets)
+				{
+					if($row_budgets['BUD_ID'] == $recette_budget)
+					{
+						$budget_libelle = $row_budgets['BUD_LIBELLE'];
+					}
+				}
+				
+				if ($modifier == 'O')
 				{
 				?>
-					Titre : <input type="text" name = "rec_titre" id = "rec_titre" value="<?php echo $recette_titre; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
-					&#160;Favori : <select name="rec_favori" id="rec_favori" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-					<option/>
-					<option value="0" <?php if ($recette_favori != '1') { echo 'selected="selected"';} ?> >Non</option>
-					<option value="1" <?php if ($recette_favori == '1') { echo 'selected="selected"';} ?> >Oui</option>
-					</select>
-				<?php
+					<div class="div_niveau">
+						<img class="img_niveau" src="images/toque2.png"/>&#160;<select name="rec_niveau" id="rec_niveau" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+							<option/>
+							<?php 
+							foreach ($niveaux as $row_niveaux)
+							{
+							?>
+								<option value="<?php echo $row_niveaux['NIV_ID'];?>" <?php if($row_niveaux['NIV_ID'] == $recette_niveau) { echo ' selected="selected"';} ?>><?php echo $row_niveaux['NIV_LIBELLE']; ?></option>
+							<?php 
+							}
+							?>
+							</select></div>
+							<div class="div_budget">
+							<img class="img_budget" src="images/euro.png"/>&#160;<select name="rec_budget" id="rec_budget" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">';
+							<option/>
+							<?php 
+							foreach ($budgets as $row_budgets)
+							{
+							?>
+								<option value="<?php echo $row_budgets['BUD_ID'];?>"  <?php if($row_budgets['BUD_ID'] == $recette_budget) { echo ' selected="selected"';} ?>><?php echo $row_budgets['BUD_LIBELLE']; ?></option>
+							<?php
+							}
+							?>
+							</select></div>
+				<?php 
 				}
 				else
 				{
 				?>
-					<input type="hidden" name="rec_favori" id="rec_favori" value="<?php echo $recette_favori; ?>"/>
-				<?php
-					echo $recette_titre; ?>&#160;<a id="lien_favori" href="#"><img id="favori" class="favori tooltip <?php if ($recette_favori != '1') { echo ' semi_transparent';} ?>" src="images/favori_3.PNG" title="Ajouter aux favoris" onclick="update_favori(<?php echo $recette_id; ?>, 'rec_favori');"/></a>
-				<?php 
-				} 
-				?>
-				
-			</h1>
-		</div>
-	</header>
-	<br/><br/>
-	<section class="entete">
-		<article class="entete_recette">
-			
-			<div class="photos_principales">
-				<section id="slideshow">
-					<div class="container">
-							<img src="<?php echo $recette_image_principale; ?>" alt="" />
-					</div>
-					<div class="materiel">
-						<header>
-							<h2 class="titre_ardoise"><u>Matériel nécessaire</u></h2>
-						</header>
-						<br/>
-						<div>
-							<div class="colonne_materiel">
-								<table class="tableau_materiel">
-									<tr>
-										<th/>
-									</tr>
-									<?php
-									if ($modifier == 'O')
-									{
-										foreach ($materiels as $row_materiels)
-										{
-											$materiel_checked = 'N';
-											foreach ($recette_materiel as $row_recette_materiel)
-											{
-												$materiel_checked = 'N';
-												if($row_recette_materiel['MAT_ID'] == $row_materiels['MAT_ID'])
-												{
-													$materiel_checked = 'O';
-													break;
-												}
-											}
-									?>
-											<tr id="ligne_materiel-<?php echo $row_materiels['MAT_ID']; ?>">
-												<td class="libelle_materiel">&#160;<input type="checkbox" name="mat_id-<?php echo $row_materiels['MAT_ID']; ?>" id="mat_id-<?php echo $row_materiels['MAT_ID']; ?>" <?php if($materiel_checked == 'O') { echo ' checked="checked"';} ?> onclick="AfficherMasquerQuantite(this, 'rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>', 'libelle_materiel-<?php echo $row_materiels['MAT_ID']; ?>', 'mat_id-<?php echo $row_materiels['MAT_ID']; ?>', <?php echo $recette_id; ?>,'mat_id-<?php echo $row_materiels['MAT_ID']; ?>');"/>&#160;<span id="libelle_materiel-<?php echo $row_materiels['MAT_ID'];?>" <?php if($materiel_checked != 'O') { echo 'class="grey"';} ?>><?php echo $row_materiels['MAT_LIBELLE']; ?></span></td>
-												<td class="quantite_materiel"><input type="<?php if($materiel_checked == 'O') { echo 'text';} else { echo 'hidden';} ?>" name="rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>" id="rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>" value="<?php if($materiel_checked == 'O') { echo $row_recette_materiel['RMA_QUANTITE'];} ?>" onchange="Update_champ_recette_materiel('rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>', this.value, <?php echo $recette_id; ?>,'mat_id-<?php echo $row_materiels['MAT_ID']; ?>');"/></td>
-											</tr>
-											
-											<?php
-											
-										}
-									}
-									else
-									{
-										foreach ($recette_materiel as $row_recette_materiel)
-										{
-											foreach ($materiels as $row_materiels)
-											{
-												$recette_materiel_libelle = '';
-												if($row_materiels['MAT_ID'] == $row_recette_materiel['MAT_ID'])
-												{
-													$recette_materiel_libelle = $row_materiels['MAT_LIBELLE'];
-													break;
-												}
-											}
-											?>
-											<tr>
-													<td class="libelle_materiel"><?php echo $recette_materiel_libelle; ?></td>
-													<td class="quantite_materiel"><?php echo $row_recette_materiel['RMA_QUANTITE']; ?></td>
-												</tr>
-											<?php
-											
-										}
-									}
-									
-									?>
-									<tr>
-										<td colspan="2"><br/></td>
-									</tr>
-								</table>
-							</div>
+					<div class="div_niveau" title="<?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?>">
+						<div class="titre_niveau"><?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?></div>
+						<div class="niveau">
+							<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 1) echo "niveau_1";?>"></div>
+							<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 2) echo "niveau_2";?>"></div>
+							<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 3) echo "niveau_3";?>"></div>
+							<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 4) echo "niveau_4";?>"></div>
 						</div>
 					</div>
-					<div>
-						<?php 
-		
-			foreach ($niveaux as $row_niveaux)
-			{
-				if($row_niveaux['NIV_ID'] == $recette_niveau)
-				{
-					$niveau_libelle = $row_niveaux['NIV_LIBELLE'];
+					<div class="div_budget" title="<?php if($recette_budget != null) { echo $budget_libelle;} else {echo '???';} ?>">
+						<div class="titre_budget"><?php if($recette_budget != null) { echo $budget_libelle;} else {echo '???';} ?></div>
+						<div class="budget">
+							<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 1) echo "niveau_1";?>"></div>
+							<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 2) echo "niveau_2";?>"></div>
+							<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 3) echo "niveau_3";?>"></div>
+						</div>
+					</div>
+				<?php 
 				}
-			}
-			
-			foreach ($budgets as $row_budgets)
-			{
-				if($row_budgets['BUD_ID'] == $recette_budget)
-				{
-					$budget_libelle = $row_budgets['BUD_LIBELLE'];
-				}
-			}
-			
-			if ($modifier == 'O')
-			{
 			?>
-				<div class="div_niveau">
-					<img class="img_niveau" src="images/toque2.PNG"/>&#160;<select name="rec_niveau" id="rec_niveau" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-						<option/>
-						<?php 
-						foreach ($niveaux as $row_niveaux)
-						{
-						?>
-							<option value="<?php echo $row_niveaux['NIV_ID'];?>" <?php if($row_niveaux['NIV_ID'] == $recette_niveau) { echo ' selected="selected"';} ?>><?php echo $row_niveaux['NIV_LIBELLE']; ?></option>
-						<?php 
-						}
-						?>
-						</select></div>
-						<div class="div_budget">
-						<img class="img_budget" src="images/euro.PNG"/>&#160;<select name="rec_budget" id="rec_budget" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">';
-						<option/>
-						<?php 
-						foreach ($budgets as $row_budgets)
-						{
-						?>
-							<option value="<?php echo $row_budgets['BUD_ID'];?>"  <?php if($row_budgets['BUD_ID'] == $recette_budget) { echo ' selected="selected"';} ?>><?php echo $row_budgets['BUD_LIBELLE']; ?></option>
-						<?php
-						}
-						?>
-						</select></div>
-
-				<!--<div class="div_budget">
-					<div class="image_budget"><img class="budget" src="images/euro.PNG"/></div>
-					<div class="image_budget"><img class="budget'.($recette_budget < 2 ? ' semi_transparent' : '').'" src="images/euro.PNG"/></div>
-					<div class="image_budget"><img class="budget'.($recette_budget < 3 ? ' semi_transparent' : '').'" src="images/euro.PNG"/></div>
-				</div>-->
-			<?php 
-			}
-			else
-			{
-			?>
-				<div class="div_niveau" title="<?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?>">
-					<div class="titre_niveau"><?php if($recette_niveau) { echo $niveau_libelle;} else {echo '???';} ?></div>
-					<div class="niveau">
-						<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 1) echo "niveau_1";?>"></div>
-						<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 2) echo "niveau_2";?>"></div>
-						<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 3) echo "niveau_3";?>"></div>
-						<div class="image_niveau <?php if($recette_niveau != null && $recette_niveau >= 4) echo "niveau_4";?>"></div>
-					</div>
-				</div>
-				<div class="div_budget" title="<?php if($recette_budget != null) { echo $budget_libelle;} else {echo '???';} ?>">
-					<div class="titre_budget"><?php if($recette_budget != null) { echo $budget_libelle;} else {echo '???';} ?></div>
-					<div class="budget">
-						<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 1) echo "niveau_1";?>"></div>
-						<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 2) echo "niveau_2";?>"></div>
-						<div class="image_budget <?php if($recette_budget != null&& $recette_budget >= 3) echo "niveau_3";?>"></div>
-					</div>
-				</div>
-			<?php 
-			}
-		?>
-					</div>
-					
-				</section>
-				<article>
-			<div class="temps_preparation">
-				<header>
-					<h2>Préparations</h2>
-				</header>
-				<br/>
-				<div class="div_indicateur">
-					<div class="image_indicateur">
-						<img alt="Temps de préparation" title="temps de préparation" class="indicateur tooltip" src="images/temps3.PNG"/>
-					</div>
-					<div class="texte_indicateur">&#160;: 
-					<?php 
-						if ($modifier == 'O')
-						{
-					?>
-							<input type="text" name = "rec_tps_prepa" id = "rec_tps_prepa" value="<?php echo $recette_tps_prepa; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/> min.
-					<?php 
-						}
-						else
-						{
-							if ($recette_tps_prepa != null) echo $recette_tps_prepa." min."; else echo "-";
-						}
-					
-					?> 
-					</div>
-				</div>
-				<div class="div_indicateur">
-					<div class="image_indicateur">
-					<img alt="Temps de repos" title="temps de repos" class="indicateur tooltip" src="images/Temps_repos2.png"/>
-					</div>
-					<div class="texte_indicateur">&#160;: 
-						<?php 
-							if ($modifier == 'O')
-							{
-						?>
-								<input type="text" name = "rec_tps_repos" id = "rec_tps_repos" value="<?php echo $recette_tps_repos; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/> min.
-						<?php 
-						}
-							else
-							{
-								if ($recette_tps_repos != null) echo $recette_tps_repos." min."; else echo "-";
-							}
-						?>
-					</div>
-				</div>
-				<div class="div_indicateur">
-					<div class="image_indicateur">
-					<img alt="Temps de cuisson" title="temps de cuisson" class="indicateur tooltip" src="images/Temps_cuisson_2.png"/>
-					</div>
-					<div class="texte_indicateur">&#160;: 
-						<?php 
-							if ($modifier == 'O')
-							{
-						?>
-								<input type="text" name = "rec_tps_cuisson" id = "rec_tps_cuisson" value="<?php echo $recette_tps_cuisson; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>);"/> min.
-						<?php
-							}
-							else
-							{
-								if ($recette_tps_cuisson != null) echo $recette_tps_cuisson." min."; else echo "-";
-							}
-						?>
-					</div>
-				</div>
-				
-			</div>
-			<?php 
-				if ($modifier == 'O')
-				{
-			?>
-			<div class="categorie">
-				<header>
-					<h2>Categorie</h2>
-				</header>
-				<br/>
-				<div>
-					<script>
-					$("body").on("change","#rec_sous_categorie",function(){
-						   alert("clicked");
-						});
-					</script>
-				
-					
-							Catégorie:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
-							<select name = "rec_categorie" id = "rec_categorie" required onchange="recup_sous_categorie('sous_categorie', this.value, <?php echo $recette_id; ?>);Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-								<option/>
-								<?php
-									foreach ($categories as $row_categories)
-									{?>
-										<option value="<?php echo $row_categories['CAT_ID']; ?>"<?php if($row_categories['CAT_ID'] == $recette_categorie) {echo ' selected="selected"';} ?>><?php echo $row_categories['CAT_TITRE']; ?></option>
-								<?php	}
-								?>	
-							</select>
-							<br/>
-							Sous-catégorie:&#160;
-							<span id="sous_categorie">
-							
-								<select name = "rec_sous_categorie" id = "rec_sous_categorie" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)" required>
-								<option/>
-								<?php
-									foreach ($sous_categories as $row_sous_categories)
-									{?>
-										<option value="<?php echo $row_sous_categories['SCA_ID']; ?>"<?php if($row_sous_categories['SCA_ID'] == $recette_sous_categorie) {echo ' selected="selected"';} ?>><?php echo $row_sous_categories['SCA_TITRE']; ?></option>
-								<?php	}
-								?>	
-							</select></span>
-					
-				</div>
-			</div>
-			<?php 
-				}					
-			?> 
-			<div class="categorie">
-				<header>
-					<h2>Source</h2>
-				</header>
-				<br/>
-				<div>
-					Source : 
-
-					<?php 
-					
-					foreach ($sources as $row_sources)
-					{
-						if($row_sources['SRC_ID'] == $recette_id_source)
-						{
-							$source_libelle = $row_sources['SRC_LIBELLE'];
-							break;
-						}
-					}
-					
-						if ($modifier == 'O')
-						{
-						?>
-							&#160;Type de source : 
-							<select name="rec_id_source" id="rec_id_source" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-								<option/>
-								<?php 
-								foreach ($sources as $row_sources)
-								{
-								?>
-									<option value=<?php echo $row_sources['SRC_ID'];?> <?php if($row_sources['SRC_ID'] == $recette_id_source) { echo ' selected="selected"';} ?>> <?php echo $row_sources['SRC_LIBELLE']; ?></option>
-								<?php 
-								}
-								?>
-							</select>
-							<input type="text" name = "rec_lien_source" id = "rec_lien_source" value="<?php  echo $recette_lien_source; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
-						<?php
-						}
-						else
-						{
-						?>
-							<a class="lien_discret" href="<?php  echo  $recette_lien_source ?>" target="blank"><?php  echo $source_libelle; ?></a>
-						<?php 
-						}
-					?>
-				</div>
-			</div>
-			
-				
-		</article>
-
-			</div>
-			</div>
-
-			
-		</article>
-		
-	</section>
-
-	<section class="ingredients">
-		<article>
-			<br/>
-			<br/>
+		</div>
+		<!-- temps préparation -->
+		<div class="temps_preparation">
 			<header>
-				<h2>
-					<?php
-						// recuperation libelle de l unite de fabrication
-						foreach ($unite_fabrication as $row_unite_fabrication)
-						{
-							$unite_fabrication_libelle = '';
-							if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id)
-							{
-								$unite_fabrication_libelle = $row_unite_fabrication['FAB_LIBELLE'];
-								break;
-							}
-						}
-					?>
-					Ingrédients 
-						<span class="nbPersonnes">
-							<?php
-							if ($modifier == "O")
-							{
-							?>
-								<input type="text" name="rec_nb_convives" id="rec_nb_convives" value="<?php echo$recette_nb_convives; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-								<select name="rec_uni_fab_id" id="rec_uni_fab_id" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-								<option/>
-								<?php 
-								foreach ($unite_fabrication as $row_unite_fabrication)
-								{
-								?>
-									<option value=<?php echo $row_unite_fabrication['FAB_ID'];?> <?php if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id) { echo ' selected="selected"';} ?>> <?php echo $row_unite_fabrication['FAB_LIBELLE']; ?></option>
-								<?php 
-								}
-								?>
-							</select>
-							<?php
-							}
-							else{
-								echo '(Pour '.$recette_nb_convives.'&#160;'.$unite_fabrication_libelle.')';
-							}
-							?>
-							
-						</span>
-					<?php
-					if ($modifier == "O")
-					{
-					?>
-					<input type="hidden" name="max_section_recette" id="max_section_recette" value="<?php echo $recette_ingredient_entete_max_id['MAX_ENTETE']; ?>"/>
-					<a href="recette.php?recette_id=<?php echo $recette_id; ?>&amp;modifier=O&amp;ajout_sec_ing=O"><img class="ajout_section_ingredient" src="images/insertion.PNG"  onclick="Ajout_section_ingredient('max_section_recette', <?php echo $recette_id; ?>);"/></a>
-					<?php 
-						}					
-					?>
-				</h2>
+				<h2>Préparations</h2>
 			</header>
 			<br/>
-			<div id="entete_recette">
-				<?php
-				if ($modifier == 'O')
-				{
-					
-					$liste_ingredients="";
-					//foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'"'.$row_ingredients["ING_LIBELLE"].'",';
-					foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'["'.$row_ingredients["ING_LIBELLE"].'","'.$row_ingredients["ING_ID"].'"],';
-					//on cree une variable pour la liste des unités en ajout
-					$liste_unite = "";
+			<div class="div_indicateur">
+				<div class="texte_indicateur">
+					Préparation&#160;:&#160;
+				<?php 
+					if ($modifier == 'O')
+					{
 				?>
-					<script type='text/javascript'>
-					liste_unite = new Array();
-					<?php
-						foreach($unite_mesure as $row_unite_mesure){
-						 
-							echo "liste_unite[".$row_unite_mesure['UNI_ID']."] = '".$row_unite_mesure['UNI_LIBELLE']."';";
-						 
+						<input type="text" name = "rec_tps_prepa" id = "rec_tps_prepa" value="<?php echo $recette_tps_prepa; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/> min.
+				<?php 
+					}
+					else
+					{
+						if ($recette_tps_prepa != null) echo $recette_tps_prepa." min."; else echo "-";
+					}
+				
+				?> 
+				</div>
+			</div>
+			<div class="div_indicateur">
+				<div class="texte_indicateur">
+					Repos&#160;:&#160;
+					<?php 
+						if ($modifier == 'O')
+						{
+					?>
+							<input type="text" name = "rec_tps_repos" id = "rec_tps_repos" value="<?php echo $recette_tps_repos; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/> min.
+					<?php 
+					}
+						else
+						{
+							if ($recette_tps_repos != null) echo $recette_tps_repos." min."; else echo "-";
 						}
-					?>	 
-					</script>
-					
-					
+					?>
+				</div>
+			</div>
+			<div class="div_indicateur">
+				<div class="texte_indicateur">
+				Cuisson&#160;:&#160;
+					<?php 
+						if ($modifier == 'O')
+						{
+					?>
+							<input type="text" name = "rec_tps_cuisson" id = "rec_tps_cuisson" value="<?php echo $recette_tps_cuisson; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>);"/> min.
 					<?php
-					//on liste les entete de recettes
-					foreach ($recette_ingredient_entete as $row_recette_ingredient_entete)
+						}
+						else
+						{
+							if ($recette_tps_cuisson != null) echo $recette_tps_cuisson." min."; else echo "-";
+						}
+					?>
+				</div>
+			</div>	
+		</div>
+		<!-- fin temps preparation -->
+		<!-- source -->
+		<?php 
+			if ($modifier == 'O')
+			{
+		?>
+		<div class="categorie">
+			<header>
+				<h2>Categorie</h2>
+			</header>
+			<br/>
+			<div>
+				<script>
+				$("body").on("change","#rec_sous_categorie",function(){
+					   alert("clicked");
+					});
+				</script>
+			
+				
+						Catégorie:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+						<select name = "rec_categorie" id = "rec_categorie" required onchange="recup_sous_categorie('sous_categorie', this.value, <?php echo $recette_id; ?>);Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+							<option/>
+							<?php
+								foreach ($categories as $row_categories)
+								{?>
+									<option value="<?php echo $row_categories['CAT_ID']; ?>"<?php if($row_categories['CAT_ID'] == $recette_categorie) {echo ' selected="selected"';} ?>><?php echo $row_categories['CAT_TITRE']; ?></option>
+							<?php	}
+							?>	
+						</select>
+						<br/>
+						Sous-catégorie:&#160;
+						<span id="sous_categorie">
+						
+							<select name = "rec_sous_categorie" id = "rec_sous_categorie" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)" required>
+							<option/>
+							<?php
+								foreach ($sous_categories as $row_sous_categories)
+								{?>
+									<option value="<?php echo $row_sous_categories['SCA_ID']; ?>"<?php if($row_sous_categories['SCA_ID'] == $recette_sous_categorie) {echo ' selected="selected"';} ?>><?php echo $row_sous_categories['SCA_TITRE']; ?></option>
+							<?php	}
+							?>	
+						</select></span>
+				
+			</div>
+		</div>
+		<!-- fin source -->
+		<?php 
+			}					
+		?> 
+		<!-- nb realisation -->
+		<div class="categorie">
+			<header>
+				<h2>Source/Nb Réalisations</h2>
+			</header>
+			<br/>
+			<div>
+				Source : 
+
+				<?php 
+				
+				foreach ($sources as $row_sources)
+				{
+					if($row_sources['SRC_ID'] == $recette_id_source)
+					{
+						$source_libelle = $row_sources['SRC_LIBELLE'];
+						break;
+					}
+				}
+				
+					if ($modifier == 'O')
 					{
 					?>
-					<div class="colonne_ingredients" id="colonne_ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>">
-						
-						<table class="tableau_ingredient" id="tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>">
-							<tr>
-								<th colspan="2">Titre Recette : <input type="text" name="rie_libelle-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" id="rie_libelle-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" value="<?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; ?>"  onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)"/>&#160;&#160;&#160;
-									<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer la section" onclick="supprimer_section_ingredient(<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'colonne_ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', <?php echo $recette_id; ?>);"/>
-								</th>	
-							</tr>
-						<?php
-						$count_nb_ingredients = 0;
-						foreach ($recette_ingredient as $row_recette_ingredient)
-						{
-							
-							if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
-							{
-								$count_nb_ingredients = $count_nb_ingredients + 1;
-								// recuperation libele de l ingredient
-								foreach ($ingredients as $row_ingredients)
-								{
-									$recette_ingredient_libelle = '';
-									if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
-									{
-										$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
-										break;
-									}
-								}
-								// recuperation libelle de l unite de mesure
-								foreach ($unite_mesure as $row_unite_mesure)
-								{
-									$unite_mesure_libelle = '';
-									if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
-									{
-										$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
-										break;
-									}
-								}
-								?>
-								<tr class="ligne_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>">
-										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-										<td class="quantite_ingredient">
-											<input type="hidden" name="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value="<?php echo $row_recette_ingredient['RIN_ID']; ?>"/>
-											<input type="text" name="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value=" <?php echo $row_recette_ingredient['RIN_QTE']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"/>
-											<select name="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"><option/>
-												<?php
-												foreach ($unite_mesure as $row_unite_mesure)
-												{
-												?>
-													<option value="<?php echo $row_unite_mesure['UNI_ID']; ?>" <?php if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID']) {echo ' selected="selected"';} ?>> <?php echo $row_unite_mesure['UNI_LIBELLE']; ?></option>
-												<?php
-												}
-												?>
-											</select>
-											&#160;
-											<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l'ingrédient" onclick="Supprimer_Ligne(this, 'tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>);"/>
-										</td>
-									</tr>
-							<?php
-							}
-						}
-					?>
-					</table>
-					<?php 
-						if ($count_nb_ingredients == 0 )
-						{
-							?>Lien vers technique de base : 
-							<select name="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)">
-							<option value="0"/>
+						&#160;Type de source : 
+						<select name="rec_id_source" id="rec_id_source" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+							<option/>
 							<?php 
-							foreach ($recette_technique_base as $row_recette_technique_base)
+							foreach ($sources as $row_sources)
 							{
 							?>
-								<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $row_recette_ingredient_entete['REC_ID_LIEN']) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
+								<option value=<?php echo $row_sources['SRC_ID'];?> <?php if($row_sources['SRC_ID'] == $recette_id_source) { echo ' selected="selected"';} ?>> <?php echo $row_sources['SRC_LIBELLE']; ?></option>
 							<?php 
 							}
 							?>
 						</select>
-						<input type="text" name="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)" value=" <?php echo $row_recette_ingredient_entete['REC_ID_LIEN_COEFF']; ?>"/>
-						<?php 	
-						}
-					if($row_recette_ingredient_entete['REC_ID_LIEN'] == 0)
-					{					
-					?>
-					<table id="AjoutIngredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"><tr>
-								<td>
-									<input id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" type="hidden" id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"/>
-									<input id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" autofocus type="text" id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" placeholder="Ajouter un ingrédient"/>
-									<img class="ajout" src="images/insertion.PNG" title="Ajouter l'ingrédient" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>
-									<!--<INPUT type="image" class="ajout" src="images/insertion.PNG" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>-->
-									<br/>
-									
-									<script>
-									
-									//champ de recherche pour les ingrédient  
-									  $(function(){
-										$("#ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>").autoComplete({
-											minChars: 1,
-											source: function(term, suggest){
-												term = term.toLowerCase();
-												var choices = [<?php echo $liste_ingredients; ?>];
-												var suggestions = [];
-												
-												for (i=0;i<choices.length;i++)
-												{
-													if (~choices[i][0].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
-													// 	alert(choices[i][0]);
-												}
-												suggest(suggestions);
-												
-											},
-											renderItem: function (item, search){
-												search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-												var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-												return '<div class="autocomplete-suggestion" data-ingredient="'+item[0]+'" data-id="'+item[1]+'" data-val="'+search+'"> '+item[0].replace(re, "<b>$1</b>")+'</div>';
-											},
-											onSelect: function(e, term, item){
-												document.getElementById('ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('ingredient');
-												document.getElementById('ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('id');
-												//alert('Item "'+item.data('ingredient')+' ('+item.data('id')+')" selected by '+(e.type == 'keydown' ? 'pressing enter' : 'mouse click')+'.');
-											}	
-										});
-									});
-									</script>
-						</td>
-					<td/>
-							</tr>
-							<tr><td>&#160;</td></tr></table><?php }	?>
-					</div>
+						<input type="text" name = "rec_lien_source" id = "rec_lien_source" value="<?php  echo $recette_lien_source; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
 					<?php
 					}
-				}
-				else
-				{
-					foreach ($recette_ingredient_entete as $row_recette_ingredient_entete)
+					else
 					{
 					?>
-						<div class="colonne_ingredients">
-						<table class="tableau_ingredient">
+						<a class="lien_discret" href="<?php  echo  $recette_lien_source ?>" target="blank"><?php  echo $source_libelle; ?></a>
+					<?php 
+					}
+				?>
+			</div>
+			<div>
+				Nombre de réalisations :
+										<img class="enlever_realisation" src="images/moins.png"  onclick="Enlever_realisation('rec_nb_realisations', <?php echo $recette_id; ?>);"/>
+										<span name = "rec_nb_realisations" id = "rec_nb_realisations"> <?php  echo $recette_nb_realisations; ?></span>
+										<img class="ajout_realisation" src="images/plus.png"  onclick="Ajouter_realisation('rec_nb_realisations', <?php echo $recette_id; ?>);"/>
+			</div>
+		</div>
+		<!-- fin nb realisation -->
+		<!-- matériel -->
+		<div class="materiel">
+			<header>
+				<h2>Matériel nécessaire</h2>
+			</header>
+			<br/>
+			<div>
+				<div class="colonne_materiel">
+					<table class="tableau_materiel">
+						<tr>
+							<th/>
+						</tr>
+						<?php
+						if ($modifier == 'O')
+						{
+							foreach ($materiels as $row_materiels)
+							{
+								$materiel_checked = 'N';
+								foreach ($recette_materiel as $row_recette_materiel)
+								{
+									$materiel_checked = 'N';
+									if($row_recette_materiel['MAT_ID'] == $row_materiels['MAT_ID'])
+									{
+										$materiel_checked = 'O';
+										break;
+									}
+								}
+						?>
+								<tr id="ligne_materiel-<?php echo $row_materiels['MAT_ID']; ?>">
+									<td class="libelle_materiel">&#160;<input type="checkbox" name="mat_id-<?php echo $row_materiels['MAT_ID']; ?>" id="mat_id-<?php echo $row_materiels['MAT_ID']; ?>" <?php if($materiel_checked == 'O') { echo ' checked="checked"';} ?> onclick="AfficherMasquerQuantite(this, 'rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>', 'libelle_materiel-<?php echo $row_materiels['MAT_ID']; ?>', 'mat_id-<?php echo $row_materiels['MAT_ID']; ?>', <?php echo $recette_id; ?>,'mat_id-<?php echo $row_materiels['MAT_ID']; ?>');"/>&#160;<span id="libelle_materiel-<?php echo $row_materiels['MAT_ID'];?>" <?php if($materiel_checked != 'O') { echo 'class="grey"';} ?>><?php echo $row_materiels['MAT_LIBELLE']; ?></span></td>
+									<td class="quantite_materiel"><input type="<?php if($materiel_checked == 'O') { echo 'text';} else { echo 'hidden';} ?>" name="rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>" id="rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>" value="<?php if($materiel_checked == 'O') { echo $row_recette_materiel['RMA_QUANTITE'];} ?>" onchange="Update_champ_recette_materiel('rma_quantite-<?php echo $row_materiels['MAT_ID']; ?>', this.value, <?php echo $recette_id; ?>,'mat_id-<?php echo $row_materiels['MAT_ID']; ?>');"/></td>
+								</tr>
+								
+								<?php
+								
+							}
+						}
+						else
+						{
+							foreach ($recette_materiel as $row_recette_materiel)
+							{
+								foreach ($materiels as $row_materiels)
+								{
+									$recette_materiel_libelle = '';
+									if($row_materiels['MAT_ID'] == $row_recette_materiel['MAT_ID'])
+									{
+										$recette_materiel_libelle = $row_materiels['MAT_LIBELLE'];
+										break;
+									}
+								}
+								?>
+								<tr>
+										<td class="libelle_materiel"><?php echo $recette_materiel_libelle; ?></td>
+										<td class="quantite_materiel"><?php echo $row_recette_materiel['RMA_QUANTITE']; ?></td>
+									</tr>
+								<?php
+								
+							}
+						}
+						
+						?>
+						<tr>
+							<td colspan="2"><br/></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- fin matériel -->
+		<!-- Ingrédients -->
+		<section class="ingredients">
+			<article>
+				<header>
+					<h2>
+						<?php
+							// recuperation libelle de l unite de fabrication
+							foreach ($unite_fabrication as $row_unite_fabrication)
+							{
+								$unite_fabrication_libelle = '';
+								if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id)
+								{
+									$unite_fabrication_libelle = $row_unite_fabrication['FAB_LIBELLE'];
+									break;
+								}
+							}
+						?>
+						Ingrédients&#160;:&#160;</br>
+							<span class="nbPersonnes">
+								<?php
+								if ($modifier == "O")
+								{
+								?>
+									<input type="text" name="rec_nb_convives" id="rec_nb_convives" value="<?php echo $recette_nb_convives; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+									<select name="rec_uni_fab_id" id="rec_uni_fab_id" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+									<option/>
+									<?php 
+									foreach ($unite_fabrication as $row_unite_fabrication)
+									{
+									?>
+										<option value=<?php echo $row_unite_fabrication['FAB_ID'];?> <?php if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id) { echo ' selected="selected"';} ?>> <?php echo $row_unite_fabrication['FAB_LIBELLE']; ?></option>
+									<?php 
+									}
+									?>
+								</select>
+								<?php
+								}
+								else{
+									/*echo '(Pour '.$recette_nb_convives.'&#160;'.$unite_fabrication_libelle.')';*/
+									$arr = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
+									?>
+										<input type="hidden" name="rec_nb_convives_tmp" id="rec_nb_convives_tmp" value="<?php echo $recette_nb_convives; ?>"/>
+										Pour &#160;
+										<select name="rec_nb_convives" id="rec_nb_convives" onchange="Calculer_proportions(this.value, <?php echo $recette_ingredient_max_id['MAX_INGREDIENT']; ?>)">
+											<?php
+											foreach ($arr as &$value) {
+											?>
+												<option value ="<?php echo $value; ?>" <?php if($recette_nb_convives == $value) { echo ' selected="selected"';} ?>><?php echo $value; ?></option>
+											<?php
+											}
+											?>
+											
+										</select>
+										&#160;
+									<?php echo $unite_fabrication_libelle;
+								}
+								?>
+								
+							</span>
+						<?php
+						if ($modifier == "O")
+						{
+						?>
+						<input type="hidden" name="max_section_recette" id="max_section_recette" value="<?php echo $recette_ingredient_entete_max_id['MAX_ENTETE']; ?>"/>
+						<a href="recette.php?recette_id=<?php echo $recette_id; ?>&amp;modifier=O&amp;ajout_sec_ing=O"><img class="ajout_section_ingredient" src="images/insertion.png"  onclick="Ajout_section_ingredient('max_section_recette', <?php echo $recette_id; ?>);"/></a>
+						<?php 
+							}					
+						?>
+					</h2>
+				</header>
+				<br/>
+				<div id="entete_recette">
+					<?php
+					if ($modifier == 'O')
+					{
+						
+						$liste_ingredients="";
+						//foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'"'.$row_ingredients["ING_LIBELLE"].'",';
+						foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'["'.$row_ingredients["ING_LIBELLE"].'","'.$row_ingredients["ING_ID"].'"],';
+						//on cree une variable pour la liste des unités en ajout
+						$liste_unite = "";
+					?>
+						<script type='text/javascript'>
+						liste_unite = new Array();
+						<?php
+							foreach($unite_mesure as $row_unite_mesure){
+							 
+								echo "liste_unite[".$row_unite_mesure['UNI_ID']."] = '".$row_unite_mesure['UNI_LIBELLE']."';";
+							 
+							}
+						?>	 
+						</script>
+						
+						
+						<?php
+						//on liste les entete de recettes
+						foreach ($recette_ingredient_entete as $row_recette_ingredient_entete)
+						{
+						?>
+						<div class="colonne_ingredients" id="colonne_ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>">
+							
+							<table class="tableau_ingredient" id="tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>">
+								<tr>
+									<th colspan="2">Titre Recette : <input type="text" name="rie_libelle-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" id="rie_libelle-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" value="<?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; ?>"  onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)"/>&#160;&#160;&#160;
+										<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la section" onclick="supprimer_section_ingredient(<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'colonne_ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', <?php echo $recette_id; ?>);"/>
+									</th>	
+								</tr>
+							<?php
+							$count_nb_ingredients = 0;
+							foreach ($recette_ingredient as $row_recette_ingredient)
+							{
+								
+								if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
+								{
+									$count_nb_ingredients = $count_nb_ingredients + 1;
+									// recuperation libele de l ingredient
+									foreach ($ingredients as $row_ingredients)
+									{
+										$recette_ingredient_libelle = '';
+										if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+										{
+											$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
+											break;
+										}
+									}
+									// recuperation libelle de l unite de mesure
+									foreach ($unite_mesure as $row_unite_mesure)
+									{
+										$unite_mesure_libelle = '';
+										if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+										{
+											$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
+											break;
+										}
+									}
+									?>
+									<tr class="ligne_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>">
+											<td class="libelle_ingredient_modif"><?php echo $recette_ingredient_libelle; ?> :</td>
+											<td class="quantite_ingredient">
+												<input type="hidden" name="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value="<?php echo $row_recette_ingredient['RIN_ID']; ?>"/>
+												<input type="text" name="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value=" <?php echo $row_recette_ingredient['RIN_QTE']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"/>
+												<select name="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"><option/>
+													<?php
+													foreach ($unite_mesure as $row_unite_mesure)
+													{
+													?>
+														<option value="<?php echo $row_unite_mesure['UNI_ID']; ?>" <?php if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID']) {echo ' selected="selected"';} ?>> <?php echo $row_unite_mesure['UNI_LIBELLE']; ?></option>
+													<?php
+													}
+													?>
+												</select>
+												&#160;
+												<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer l'ingrédient" onclick="Supprimer_Ligne(this, 'tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>);"/>
+											</td>
+										</tr>
+								<?php
+								}
+							}
+						?>
+						</table>
+						<?php 
+							if ($count_nb_ingredients == 0 )
+							{
+								?>Lien vers technique de base : 
+								<select name="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)">
+								<option value="0"/>
+								<?php 
+								foreach ($recette_technique_base as $row_recette_technique_base)
+								{
+								?>
+									<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $row_recette_ingredient_entete['REC_ID_LIEN']) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
+								<?php 
+								}
+								?>
+							</select>
+							<input type="text" name="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" id="rec_id_lien_coeff-<?php echo $row_recette_ingredient_entete['RIE_ID'];?>" onchange="Update_champ_recette_entete_ingredient(this.id, this.value, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>)" value=" <?php echo $row_recette_ingredient_entete['REC_ID_LIEN_COEFF']; ?>"/>
+							<?php 	
+							}
+						if($row_recette_ingredient_entete['REC_ID_LIEN'] == 0)
+						{					
+						?>
+						<table id="AjoutIngredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"><tr>
+									<td>
+										<input id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" type="hidden" id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"/>
+										<input id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" autofocus type="text" id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" placeholder="Ajouter un ingrédient"/>
+										<img class="ajout" src="images/insertion.png" title="Ajouter l'ingrédient" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>
+										<!--<INPUT type="image" class="ajout" src="images/insertion.png" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>-->
+										<br/>
+										
+										<script>
+										
+										//champ de recherche pour les ingrédient  
+										  $(function(){
+											$("#ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>").autoComplete({
+												minChars: 1,
+												source: function(term, suggest){
+													term = term.toLowerCase();
+													var choices = [<?php echo $liste_ingredients; ?>];
+													var suggestions = [];
+													
+													for (i=0;i<choices.length;i++)
+													{
+														if (~choices[i][0].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
+														// 	alert(choices[i][0]);
+													}
+													suggest(suggestions);
+													
+												},
+												renderItem: function (item, search){
+													search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+													var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+													return '<div class="autocomplete-suggestion" data-ingredient="'+item[0]+'" data-id="'+item[1]+'" data-val="'+search+'"> '+item[0].replace(re, "<b>$1</b>")+'</div>';
+												},
+												onSelect: function(e, term, item){
+													document.getElementById('ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('ingredient');
+													document.getElementById('ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('id');
+													//alert('Item "'+item.data('ingredient')+' ('+item.data('id')+')" selected by '+(e.type == 'keydown' ? 'pressing enter' : 'mouse click')+'.');
+												}	
+											});
+										});
+										</script>
+							</td>
+						<td/>
+								</tr>
+								<tr><td>&#160;</td></tr></table><?php }	?>
+						</div>
+						<?php
+						}
+					}
+					else
+					{
+						foreach ($recette_ingredient_entete as $row_recette_ingredient_entete)
+						{
+						?>
+							<div class="colonne_ingredients">
+							<table class="tableau_ingredient">
+								<tr>
+									<th colspan="3"><?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; 
+									if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
+									{
+										?>
+										<img class="lien_recette" src="images/link.png"/>
+										<?php
+									}
+									?></th>
+								</tr>
+							<?php
+							
+							//on regarde par rapport à la recette ou la recette mis en lien en technique de base
+							if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
+							{
+								//Récupération données ingredient recette
+								$result_t_recette_lien_ingredient = $bdd->query("select RIN_ID, RIE_ID, REC_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$row_recette_ingredient_entete['REC_ID_LIEN']." order by RIN_ID");
+								$recette_ingredient = $result_t_recette_lien_ingredient->fetchAll(PDO::FETCH_ASSOC);
+								foreach ($recette_ingredient as $row_recette_ingredient)
+								{
+									
+									//on filtre les ingrédient liés à la recette
+									
+										// recuperation libele de l ingredient
+										foreach ($ingredients as $row_ingredients)
+										{
+											$recette_ingredient_libelle = '';
+											if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+											{
+												$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
+												break;
+											}
+										}
+										// recuperation libelle de l unite de mesure
+										foreach ($unite_mesure as $row_unite_mesure)
+										{
+											$unite_mesure_libelle = '';
+											if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+											{
+												$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
+												break;
+											}
+										}
+										?>
+										<tr>
+											<td class="libelle_ingredient" id="libelle_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo $recette_ingredient_libelle; ?> :</td>
+											<td class="quantite_ingredient_lecture" id="quantite_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo $row_recette_ingredient['RIN_QTE']*$row_recette_ingredient_entete['REC_ID_LIEN_COEFF'] ?></td>
+											<td class="libelle_unite" id="libelle_unite-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo $unite_mesure_libelle; ?></td>
+										</tr>
+									<?php
+
+								}
+							}
+							else
+							{
+								foreach ($recette_ingredient as $row_recette_ingredient)
+								{
+									
+									//on filtre les ingrédient liés à la recette
+									if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
+									{
+										// recuperation libele de l ingredient
+										foreach ($ingredients as $row_ingredients)
+										{
+											$recette_ingredient_libelle = '';
+											if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
+											{
+												$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
+												break;
+											}
+										}
+										// recuperation libelle de l unite de mesure
+										foreach ($unite_mesure as $row_unite_mesure)
+										{
+											$unite_mesure_libelle = '';
+											if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
+											{
+												$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
+												break;
+											}
+										}
+										?>
+										<tr>
+											<td class="libelle_ingredient" id="libelle_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo $recette_ingredient_libelle; ?> :</td>
+											<td class="quantite_ingredient_lecture" id="quantite_ingredient-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo ($row_recette_ingredient['RIN_QTE']*1)?></td>
+											<td class="libelle_unite" id="libelle_unite-<?php echo $row_recette_ingredient['RIN_ID']; ?>"><?php echo $unite_mesure_libelle; ?></td>
+										</tr>
+									<?php
+									}
+								}
+							}
+							?>
 							<tr>
-								<th colspan="2"><?php echo $row_recette_ingredient_entete['RIE_LIBELLE']; 
-								if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
+									<td></td>
+									<td></td>
+								</tr>
+								</table>	
+							</div>
+						<?php
+						}
+					}
+					?>
+					
+					</div>
+			</article>
+		</section>
+		<!-- fin Ingrédients -->
+		<!-- tags -->
+		<section class="tags_recette">
+			<article>
+				<header>
+					<h2>
+						Tags
+					</h2>
+				</header>
+				<input name="tags" name="REC_TAG" id="REC_TAG" value="<?php echo $recette_tag; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+				<br/>
+			</article>
+		</section>
+		<!-- Fin tags -->
+	 </div>
+	 <div id="main_recette">
+	 <main>
+		
+		<section class="entete">
+			<article class="entete_recette">
+				<div class="photos_principales">
+					<section id="slideshow">
+						<div class="container">
+								<img src="<?php echo $recette_image_principale; ?>" alt="" />
+						</div>
+
+						<div class="titre_recette">
+							<h1>
+								
+								<?php if ($modifier == 'O')
+								{
+								?>
+									Titre : <input type="text" name = "rec_titre" id = "rec_titre" value="<?php echo $recette_titre; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
+									&#160;Favori : <select name="rec_favori" id="rec_favori" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
+									<option/>
+									<option value="0" <?php if ($recette_favori != '1') { echo 'selected="selected"';} ?> >Non</option>
+									<option value="1" <?php if ($recette_favori == '1') { echo 'selected="selected"';} ?> >Oui</option>
+									</select>
+								<?php
+								}
+								else
+								{
+								?>
+									<input type="hidden" name="rec_favori" id="rec_favori" value="<?php echo $recette_favori; ?>"/>
+								<?php
+									echo $recette_titre; ?>&#160;<a id="lien_favori" href="#"><img id="favori" class="favori tooltip <?php if ($recette_favori != '1') { echo ' semi_transparent';} ?>" src="images/favori_3.png" title="Ajouter aux favoris" onclick="update_favori(<?php echo $recette_id; ?>, 'rec_favori');"/></a>
+								<?php 
+								} 
+								?>
+								
+							</h1>
+						</div>
+					</section>
+				</div>
+			</article>
+		</section>
+		
+		<section class="etapes_recette" id="etapes_recette">
+		<br/>
+		<br/>
+		<h2>
+			<?php
+			if ($modifier == "O")
+			{
+			?>
+			Ajouter une étape&#160;<img class="ajout" src="images/insertion.png" title="Ajouter l'étape" onclick="Ajout_Etape(document.getElementById('Neta_id').value, <?php echo $recette_id; ?>);"/>
+			<input type="hidden" name="Neta_id" id="Neta_id" value="<?php echo $recette_etapes_max_id->MAX_ETAPE; ?>"/>
+			<?php 
+			}
+			?>
+		</h2>
+		<br/>
+		<?php
+			foreach ($etapes as $row_etapes)
+			{
+				$etapes_id =  $row_etapes['ETA_ID'];
+				$etapes_titre =  $row_etapes['ETA_TITRE'];
+				$etapes_description =  $row_etapes['ETA_DESCRIPTION'];
+				$etapes_recette_lien =  $row_etapes['REC_ID_LIEN'];
+				
+				?>
+				<article id="Etape_<?php echo $etapes_id; ?>">
+					<header>
+						<h3>
+							<?php if ($modifier == "N")
+							{
+							?>
+								<label><input type="checkbox" id="Checkbox_etape_<?php echo $etapes_id; ?>" onclick="Etape_realisee(this,<?php echo $etapes_id; ?>);"/>
+							<?php 
+							}
+							?>
+							Etape <?php echo $etapes_id; ?>&#160;:&#160;</label>
+							<?php 
+							if ($modifier == "O")
+							{
+								?>
+								<input type="text" name="eta_titre-<?php echo $etapes_id; ?>" id="eta_titre-<?php echo $etapes_id; ?>" value=" <?php echo $etapes_titre; ?>" onchange="Update_champ_recette_etape('eta_titre-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"/>
+								<?php
+							}
+							else
+							{
+								echo $etapes_titre;echo '&#160;&#160;';
+								if($etapes_recette_lien != 0)
 								{
 									?>
 									<img class="lien_recette" src="images/link.png"/>
 									<?php
 								}
-								?></th>
-							</tr>
-						<?php
-						
-						//on regarde par rapport à la recette ou la recette mis en lien en technique de base
-						if($row_recette_ingredient_entete['REC_ID_LIEN'] != 0)
-						{
-							//Récupération données ingredient recette
-							$result_t_recette_lien_ingredient = $bdd->query("select RIN_ID, RIE_ID, REC_ID, ING_ID, RIN_COMMENTAIRE, RIN_QTE, UNI_ID from T_RECETTE_INGREDIENTS WHERE REC_ID = ".$row_recette_ingredient_entete['REC_ID_LIEN']." order by RIN_ID");
-							$recette_ingredient = $result_t_recette_lien_ingredient->fetchAll(PDO::FETCH_ASSOC);
-							foreach ($recette_ingredient as $row_recette_ingredient)
-							{
 								
-								//on filtre les ingrédient liés à la recette
-								
-									// recuperation libele de l ingredient
-									foreach ($ingredients as $row_ingredients)
-									{
-										$recette_ingredient_libelle = '';
-										if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
-										{
-											$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
-											break;
-										}
-									}
-									// recuperation libelle de l unite de mesure
-									foreach ($unite_mesure as $row_unite_mesure)
-									{
-										$unite_mesure_libelle = '';
-										if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
-										{
-											$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
-											break;
-										}
-									}
-									?>
-									<tr>
-										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-										<td class="quantite_ingredient"><?php echo $row_recette_ingredient['RIN_QTE']*$row_recette_ingredient_entete['REC_ID_LIEN_COEFF'].'&#160;'.$unite_mesure_libelle; ?></td>
-									</tr>
-								<?php
-
 							}
-						}
-						else
-						{
-							foreach ($recette_ingredient as $row_recette_ingredient)
-							{
-								
-								//on filtre les ingrédient liés à la recette
-								if($row_recette_ingredient['RIE_ID'] == $row_recette_ingredient_entete['RIE_ID'])
-								{
-									// recuperation libele de l ingredient
-									foreach ($ingredients as $row_ingredients)
-									{
-										$recette_ingredient_libelle = '';
-										if($row_ingredients['ING_ID'] == $row_recette_ingredient['ING_ID'])
-										{
-											$recette_ingredient_libelle = $row_ingredients['ING_LIBELLE'];
-											break;
-										}
-									}
-									// recuperation libelle de l unite de mesure
-									foreach ($unite_mesure as $row_unite_mesure)
-									{
-										$unite_mesure_libelle = '';
-										if($row_unite_mesure['UNI_ID'] == $row_recette_ingredient['UNI_ID'])
-										{
-											$unite_mesure_libelle = $row_unite_mesure['UNI_LIBELLE'];
-											break;
-										}
-									}
-									?>
-									<tr>
-										<td class="libelle_ingredient"><?php echo $recette_ingredient_libelle; ?> :</td>
-										<td class="quantite_ingredient"><?php echo ($row_recette_ingredient['RIN_QTE']*1).'&#160;'.$unite_mesure_libelle; ?></td>
-									</tr>
-								<?php
-								}
-							}
-						}
-						?>
-						<tr>
-								<td></td>
-								<td></td>
-							</tr>
-							</table>	
-						</div>
-					<?php
-					}
-				}
-				?>
-				
-				</div>
-		</article>
-	</section>
-	<section class="etapes_recette" id="etapes_recette">
-	<br/>
-	<br/>
-	<h2>
-		Recette
-		<?php
-		if ($modifier == "O")
-		{
-		?>
-		&#160;<img class="ajout" src="images/insertion.PNG" title="Ajouter l'ingrédient" onclick="Ajout_Etape(document.getElementById('Neta_id').value, <?php echo $recette_id; ?>);"/>
-		<input type="hidden" name="Neta_id" id="Neta_id" value="<?php echo $recette_etapes_max_id->MAX_ETAPE; ?>"/>
-		<?php 
-		}
-		?>
-	</h2>
-	<br/>
-	<?php
-		foreach ($etapes as $row_etapes)
-		{
-			$etapes_id =  $row_etapes['ETA_ID'];
-			$etapes_titre =  $row_etapes['ETA_TITRE'];
-			$etapes_description =  $row_etapes['ETA_DESCRIPTION'];
-			$etapes_recette_lien =  $row_etapes['REC_ID_LIEN'];
-			
-			?>
-			<article id="Etape_<?php echo $etapes_id; ?>">
-				<header>
-					<h3>
-						<?php if ($modifier == "N")
-						{
-						?>
-							<label><input type="checkbox" id="Checkbox_etape_<?php echo $etapes_id; ?>" onclick="Etape_realisee(this,<?php echo $etapes_id; ?>);"/>
-						<?php 
-						}
-						?>
-						Etape <?php echo $etapes_id; ?>&#160;:&#160;</label>
-						<?php 
-						if ($modifier == "O")
-						{
 							?>
-							<input type="text" name="eta_titre-<?php echo $etapes_id; ?>" id="eta_titre-<?php echo $etapes_id; ?>" value=" <?php echo $etapes_titre; ?>" onchange="Update_champ_recette_etape('eta_titre-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"/>
-							<?php
-						}
-						else
-						{
-							echo $etapes_titre;echo '&#160;&#160;';
-							if($etapes_recette_lien != 0)
+							&#160;<?php if ($row_etapes != end($etapes)){?><img class="ordre" src="images/chevron_bas.png" title="Descendre l'étape" onclick="alert('descendre');"/><?php } ?><?php if ($row_etapes != reset($etapes)){?><img class="ordre" src="images/chevron_haut.png" title="Monter l'étape" onclick="alert('Monter');"/><?php } ?>
+							<?php if ($modifier == "O")
+							{
+							?>
+							&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la section" onclick="supprimer_etape(<?php echo $etapes_id; ?>, 'Etape_<?php echo $etapes_id; ?>', <?php echo $recette_id; ?>);"/>
+							<?php 
+							}
+							?>
+						</h3>
+					</header>
+					<div class="etape_recette" id="etape_recette">
+					
+					<?php
+					$ressources_images = glob($nom_dossier."/" . $recette_id . "/etapes/".$etapes_id."/*.jpg");
+							foreach ($ressources_images as $filename)
 							{
 								?>
-								<img class="lien_recette" src="images/link.png"/>
+								<div id="photo<?php echo $filename; ?>">
+								<?php 
+								echo '<a class="photo_link" href="'.$filename.'" data-lightbox="etape'.$etapes_id.'"><img class="photo" src="'.$filename.'" alt=""/></a>';
+								if ($modifier == "O")
+								{
+									?>
+									<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer l\'image" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
+									
+									<?php
+								}
+								?>
+								</div>
 								<?php
 							}
 							
-						}
-						?>
-						&#160;<?php if ($row_etapes != end($etapes)){?><img class="ordre" src="images/chevron_bas.png" title="Descendre l'étape" onclick="alert('descendre');"/><?php } ?><?php if ($row_etapes != reset($etapes)){?><img class="ordre" src="images/chevron_haut.png" title="Monter l'étape" onclick="alert('Monter');"/><?php } ?>
-						<?php if ($modifier == "O")
-						{
-						?>
-						&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer la section" onclick="supprimer_etape(<?php echo $etapes_id; ?>, 'Etape_<?php echo $etapes_id; ?>', <?php echo $recette_id; ?>);"/>
-						<?php 
-						}
-						?>
-					</h3>
-				</header>
-				<div class="etape_recette" id="etape_recette">
+
 				
-				<?php
-				$ressources_images = glob($nom_dossier."/" . $recette_id . "/etapes/".$etapes_id."/*.jpg");
-						foreach ($ressources_images as $filename)
-						{
-							?>
-							<div id="photo<?php echo $filename; ?>">
-							<?php 
-							echo '<a class="photo_link" href="'.$filename.'" data-lightbox="etape'.$etapes_id.'"><img class="photo" src="'.$filename.'" alt=""/></a>';
-							if ($modifier == "O")
-							{
-								?>
-								<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'image" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'etape_recette');"/>
-								
-								<?php
-							}
-							?>
-							</div>
-							<?php
-						}
-						
-				
-			
-				if ($modifier == "O")
-				{
-					?>
-					
-					<script type="text/javascript">
-						$(document).ready(function() { 
-							var options = { 
-									target:   '#output-<?php echo $etapes_id; ?>',   // target element(s) to be updated with server response 
-									beforeSubmit:  beforeSubmit,  // pre-submit callback 
-									success:       afterSuccess,  // post-submit callback 
-									uploadProgress: OnProgress, //upload progress callback 
-									resetForm: true        // reset the form after successful submit 
-								}; 
-								
-							 $('#MyUploadForm-<?php echo $etapes_id; ?>').submit(function() { 
-									$(this).ajaxSubmit(options);  			
-									// always return false to prevent standard browser submit and page navigation 
-									return false; 
-								}); 
-								
-
-						//function after succesful file upload (when server response)
-						function afterSuccess()
-						{
-							$('#submit-btn-<?php echo $etapes_id; ?>').show(); //hide submit button
-							$('#loading-img-<?php echo $etapes_id; ?>').hide(); //hide submit button
-							$('#progressbox-<?php echo $etapes_id; ?>').delay( 1000 ).fadeOut(); //hide progress bar
-
-						}
-
-						//function to check file size before uploading.
-						function beforeSubmit(){
-							//check whether browser fully supports all File API
-						   if (window.File && window.FileReader && window.FileList && window.Blob)
-							{
-								
-								if( !$('#FileInput-<?php echo $etapes_id; ?>').val()) //check empty input filed
-								{
-									$("#output-<?php echo $etapes_id; ?>").html("Are you kidding me?");
-									return false
-								}
-								
-								var fsize = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].size; //get file size
-								var ftype = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].type; // get file type
-								
-
-								//allow file types 
-								switch(ftype)
-								{
-									case 'image/png': 
-									case 'image/gif': 
-									case 'image/jpeg': 
-									case 'image/pjpeg':
-									case 'text/plain':
-									case 'text/html':
-									case 'application/x-zip-compressed':
-									case 'application/pdf':
-									case 'application/msword':
-									case 'application/vnd.ms-excel':
-									case 'video/mp4':
-										break;
-									default:
-										$("#output-<?php echo $etapes_id; ?>").html("<b>"+ftype+"</b> Unsupported file type!");
-										return false
-								}
-								
-								//Allowed file size is less than 5 MB (1048576)
-								/*if(fsize>5242880) 
-								{
-									$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
-									return false
-								}*/
-										
-								$('#submit-btn-<?php echo $etapes_id; ?>').hide(); //hide submit button
-								$('#loading-img-<?php echo $etapes_id; ?>').show(); //hide submit button
-								$("#output-<?php echo $etapes_id; ?>").html("");  
-							}
-							else
-							{
-								//Output error to older unsupported browsers that doesn't support HTML5 File API
-								$("#output-<?php echo $etapes_id; ?>").html("Please upgrade your browser, because your current browser lacks some new features we need!");
-								return false;
-							}
-						}
-
-						//progress bar function
-						function OnProgress(event, position, total, percentComplete)
-						{
-							//Progress bar
-							$('#progressbox-<?php echo $etapes_id; ?>').show();
-							$('#progressbar-<?php echo $etapes_id; ?>').width(percentComplete + '%') //update progressbar percent complete
-							$('#statustxt-<?php echo $etapes_id; ?>').html(percentComplete + '%'); //update status text
-							if(percentComplete>50)
-								{
-									$('#statustxt-<?php echo $etapes_id; ?>').css('color','#000'); //change status text to white after 50%
-								}
-						}
-
-						//function to format bites bit.ly/19yoIPO
-						function bytesToSize(bytes) {
-						   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-						   if (bytes == 0) return '0 Bytes';
-						   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-						   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-						}
-
-						}); 
-
-						</script>
-					
-					
-
-					
-					
-					
-					<div>
-						<h3>Ajax File Uploader</h3>
-							<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm-<?php echo $etapes_id; ?>">
-							<input name="FileInput-<?php echo $etapes_id; ?>" id="FileInput-<?php echo $etapes_id; ?>" type="file" />
-							<input name="FileOutput-<?php echo $etapes_id; ?>" id="FileOutput-<?php echo $etapes_id; ?>" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/etapes/<?php echo $etapes_id; ?>/"/>
-							<input name="Name_File_id-<?php echo $etapes_id; ?>" id="Name_File_id-<?php echo $etapes_id; ?>" type="hidden" value="<?php echo $etapes_id; ?>"/>
-							<input type="hidden" name="index" id="index" value="<?php echo $etapes_id; ?>" />
-							<input type="submit"  id="submit-btn-<?php echo $etapes_id; ?>" value="Upload" />
-							<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
-							</form>
-							<div id="progressbox-<?php echo $etapes_id; ?>" ><div id="progressbar-<?php echo $etapes_id; ?>"></div ><div id="statustxt-<?php echo $etapes_id; ?>">0%</div></div>
-							<div id="output-<?php echo $etapes_id; ?>"></div>
-					
-						<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
-						
-						
-						<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="10" cols="200" onchange="document.getElementById('rec_id_lien-<?php echo $etapes_id; ?>').value=0;Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', 0, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
-						<br/>
-						--OU--
-						<br/>
-						Lien vers technique de base : 
-							<select name="rec_id_lien-<?php echo $etapes_id;?>" id="rec_id_lien-<?php echo $etapes_id;?>" onchange="document.getElementById('eta_description-<?php echo $etapes_id; ?>').value='';Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', '', <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');">
-							<option value="null"/>
-							<?php 
-							foreach ($recette_technique_base as $row_recette_technique_base)
-							{
-							?>
-								<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $etapes_recette_lien) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
-							<?php 
-							}
-							?>
-						</select>
-						
-					</div>
-				<?php
-				}
-				else
-				{
-						?>
-						<div>
-						<?php 
-						if($etapes_recette_lien == 0)
-						{
-							echo $etapes_description;
-						}
-						else
-						{	$i=0;
-							//Récupération données ingredient recette
-							$result_t_recette_lien_etapes = $bdd->query("select REC_ID, ETA_ID, ETA_TITRE, ETA_DESCRIPTION from T_RECETTE_ETAPES WHERE REC_ID = ".$etapes_recette_lien." order by ETA_ID");
-							$recette_lien_etapes = $result_t_recette_lien_etapes->fetchAll(PDO::FETCH_ASSOC);
-							foreach ($recette_lien_etapes as $row_recette_lien_etapes)
-							{
-								$i=$i+1;
-							?>
-								<div class="sousEtape">
-								<h4>
-							<?php
-								echo $i.'- '.$row_recette_lien_etapes['ETA_TITRE']; 
-							?>
-								</h4>
-							<?php
-								echo $row_recette_lien_etapes['ETA_DESCRIPTION']; 
-							?>
-								</br>
-								</br>
-								</div>
-							<?php
-							}
-						
-						}
-						
-						?>
-						</div>
-
-					<?php
-				
-				}
-				?>
-				</div>
-			</article>
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-		<?php
-		}
-	?>
-	</section>
-	<section class="astuce_remarque_recette" id="astuces_recette">
-		<br/>
-		<br/>
-		<article>
-			<header>
-				<h3>
-					Astuces/Remarques
-					<?php
 					if ($modifier == "O")
 					{
-					?>
-					&#160;<img class="ajout" src="images/insertion.PNG" title="Ajouter l'astuce" onclick="Ajout_Astuce(document.getElementById('Nras_id').value, <?php echo $recette_id; ?>);"/>
-					<input type="hidden" name="Nras_id" id="Nras_id" value="<?php echo $recette_a_max_id->MAX_ASTUCE; ?>"/>
+						?>
+						
+						<script type="text/javascript">
+							$(document).ready(function() { 
+								var options = { 
+										target:   '#output-<?php echo $etapes_id; ?>',   // target element(s) to be updated with server response 
+										beforeSubmit:  beforeSubmit,  // pre-submit callback 
+										success:       afterSuccess,  // post-submit callback 
+										uploadProgress: OnProgress, //upload progress callback 
+										resetForm: true        // reset the form after successful submit 
+									}; 
+									
+								 $('#MyUploadForm-<?php echo $etapes_id; ?>').submit(function() { 
+										$(this).ajaxSubmit(options);  			
+										// always return false to prevent standard browser submit and page navigation 
+										return false; 
+									}); 
+									
+
+							//function after succesful file upload (when server response)
+							function afterSuccess()
+							{
+								$('#submit-btn-<?php echo $etapes_id; ?>').show(); //hide submit button
+								$('#loading-img-<?php echo $etapes_id; ?>').hide(); //hide submit button
+								$('#progressbox-<?php echo $etapes_id; ?>').delay( 1000 ).fadeOut(); //hide progress bar
+
+							}
+
+							//function to check file size before uploading.
+							function beforeSubmit(){
+								//check whether browser fully supports all File API
+							   if (window.File && window.FileReader && window.FileList && window.Blob)
+								{
+									
+									if( !$('#FileInput-<?php echo $etapes_id; ?>').val()) //check empty input filed
+									{
+										$("#output-<?php echo $etapes_id; ?>").html("Are you kidding me?");
+										return false
+									}
+									
+									var fsize = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].size; //get file size
+									var ftype = $('#FileInput-<?php echo $etapes_id; ?>')[0].files[0].type; // get file type
+									
+
+									//allow file types 
+									switch(ftype)
+									{
+										case 'image/png': 
+										case 'image/gif': 
+										case 'image/jpeg': 
+										case 'image/pjpeg':
+										case 'text/plain':
+										case 'text/html':
+										case 'application/x-zip-compressed':
+										case 'application/pdf':
+										case 'application/msword':
+										case 'application/vnd.ms-excel':
+										case 'video/mp4':
+											break;
+										default:
+											$("#output-<?php echo $etapes_id; ?>").html("<b>"+ftype+"</b> Unsupported file type!");
+											return false
+									}
+									
+									//Allowed file size is less than 5 MB (1048576)
+									/*if(fsize>5242880) 
+									{
+										$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
+										return false
+									}*/
+											
+									$('#submit-btn-<?php echo $etapes_id; ?>').hide(); //hide submit button
+									$('#loading-img-<?php echo $etapes_id; ?>').show(); //hide submit button
+									$("#output-<?php echo $etapes_id; ?>").html("");  
+								}
+								else
+								{
+									//Output error to older unsupported browsers that doesn't support HTML5 File API
+									$("#output-<?php echo $etapes_id; ?>").html("Please upgrade your browser, because your current browser lacks some new features we need!");
+									return false;
+								}
+							}
+
+							//progress bar function
+							function OnProgress(event, position, total, percentComplete)
+							{
+								//Progress bar
+								$('#progressbox-<?php echo $etapes_id; ?>').show();
+								$('#progressbar-<?php echo $etapes_id; ?>').width(percentComplete + '%') //update progressbar percent complete
+								$('#statustxt-<?php echo $etapes_id; ?>').html(percentComplete + '%'); //update status text
+								if(percentComplete>50)
+									{
+										$('#statustxt-<?php echo $etapes_id; ?>').css('color','#000'); //change status text to white after 50%
+									}
+							}
+
+							//function to format bites bit.ly/19yoIPO
+							function bytesToSize(bytes) {
+							   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+							   if (bytes == 0) return '0 Bytes';
+							   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+							   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+							}
+
+							}); 
+
+							</script>
+						
+						
+
+						
+						
+						
+						<div>
+							<h3>Ajax File Uploader</h3>
+								<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm-<?php echo $etapes_id; ?>">
+								<input name="FileInput-<?php echo $etapes_id; ?>" id="FileInput-<?php echo $etapes_id; ?>" type="file" />
+								<input name="FileOutput-<?php echo $etapes_id; ?>" id="FileOutput-<?php echo $etapes_id; ?>" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/etapes/<?php echo $etapes_id; ?>/"/>
+								<input name="Name_File_id-<?php echo $etapes_id; ?>" id="Name_File_id-<?php echo $etapes_id; ?>" type="hidden" value="<?php echo $etapes_id; ?>"/>
+								<input type="hidden" name="index" id="index" value="<?php echo $etapes_id; ?>" />
+								<input type="submit"  id="submit-btn-<?php echo $etapes_id; ?>" value="Upload" />
+								<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
+								</form>
+								<div id="progressbox-<?php echo $etapes_id; ?>" ><div id="progressbar-<?php echo $etapes_id; ?>"></div ><div id="statustxt-<?php echo $etapes_id; ?>">0%</div></div>
+								<div id="output-<?php echo $etapes_id; ?>"></div>
+						
+							<input type="hidden" name="eta_id-<?php echo $etapes_id; ?>" id="eta_id-<?php echo $etapes_id; ?>" value="<?php echo $etapes_id; ?>"/>
+							
+							
+							<textarea name="eta_description-<?php echo $etapes_id; ?>" id="eta_description-<?php echo $etapes_id; ?>" rows="12" cols="130" onchange="document.getElementById('rec_id_lien-<?php echo $etapes_id; ?>').value=0;Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', 0, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');"><?php echo $etapes_description; ?></textarea>
+							<br/>
+							-- OU --
+							<br/>
+							Lien vers technique de base : 
+								<select name="rec_id_lien-<?php echo $etapes_id;?>" id="rec_id_lien-<?php echo $etapes_id;?>" onchange="document.getElementById('eta_description-<?php echo $etapes_id; ?>').value='';Update_champ_recette_etape('eta_description-<?php echo $etapes_id; ?>', '', <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');Update_champ_recette_etape('rec_id_lien-<?php echo $etapes_id; ?>', this.value, <?php echo $recette_id; ?>,'eta_id-<?php echo $etapes_id; ?>');">
+								<option value="null"/>
+								<?php 
+								foreach ($recette_technique_base as $row_recette_technique_base)
+								{
+								?>
+									<option value=<?php echo $row_recette_technique_base['REC_ID'];?> <?php if($row_recette_technique_base['REC_ID'] == $etapes_recette_lien) { echo ' selected="selected"';} ?>> <?php echo $row_recette_technique_base['REC_TITRE']; ?></option>
+								<?php 
+								}
+								?>
+							</select>
+							
+						</div>
 					<?php
 					}
-					?>
-				</h3>
-			<br/>
-			</header>
-			<div>
-			<ul class="astuces" id="astuces">
-			<?php
-			foreach ($recette_astuces as $row_recette_astuces)
-			{
-				$astuce_id =  $row_recette_astuces['RAS_ID'];
-				$astuce_description =  $row_recette_astuces['RAS_DESCRIPTION'];
-				
-				if ($modifier == "O")
-				{
-					?>
-					<li id="Astuce_<?php echo $astuce_id; ?>">
-					<?php echo $astuce_id; ?>.&#160;&#160;
-					<input type="hidden" name="ras_id-<?php echo $astuce_id; ?>" id="ras_id-<?php echo $astuce_id; ?>" value="<?php echo $astuce_id; ?>"/>
-					<textarea name="ras_description-<?php echo $astuce_id; ?>" id="ras_description-<?php echo $astuce_id; ?>" rows="3" cols="200" onchange="Update_champ_recette_astuce('ras_description-<?php echo $astuce_id; ?>', this.value, <?php echo $recette_id; ?>,'ras_id-<?php echo $astuce_id; ?>');"><?php echo $astuce_description; ?></textarea>
-					&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l'astuce" onclick="supprimer_astuce(<?php echo $astuce_id; ?>, 'Astuce_<?php echo $astuce_id; ?>', <?php echo $recette_id; ?>);"/>
-					<br/>
-					<br/>
-					</li>
-			
-				<?php
-				}
-				else
-				{
-					echo '<li>';
-					echo $astuce_id.'.&#160;&#160';
-					echo $astuce_description;
-					echo '</li>';
-				}
-			}
-				?>
-			</ul>
-			</div>
-		</article>
-			<br/>
-			<br/>
-		<?php
-		if ($modifier == "O")
-		{
-			//AJOUTER UN BOUTON D'AJOUT D'ASTUCE
-		}
-		
-		?>
-
-	</section>
-	<section class="bonus_recette">
-		<article>
-			<br/>
-			<br/>
-			<header>
-				<h2>
-					Ressources associées
-				</h2>
-			</header>
-			<br/>
-			<div align="center">
-			
-					<script type="text/javascript">
-$(document).ready(function() { 
-	var options = { 
-			target:   '#output',   // target element(s) to be updated with server response 
-			beforeSubmit:  beforeSubmit,  // pre-submit callback 
-			success:       afterSuccess,  // post-submit callback 
-			uploadProgress: OnProgress, //upload progress callback 
-			resetForm: true        // reset the form after successful submit 
-		}; 
-		
-	 $('#MyUploadForm').submit(function() { 
-			$(this).ajaxSubmit(options);  			
-			// always return false to prevent standard browser submit and page navigation 
-			return false; 
-		}); 
-		
-
-//function after succesful file upload (when server response)
-function afterSuccess()
-{
-	$('#submit-btn').show(); //hide submit button
-	$('#loading-img').hide(); //hide submit button
-	$('#progressbox').delay( 1000 ).fadeOut(); //hide progress bar
-
-}
-
-//function to check file size before uploading.
-function beforeSubmit(){
-    //check whether browser fully supports all File API
-   if (window.File && window.FileReader && window.FileList && window.Blob)
-	{
-		
-		if( !$('#FileInput').val()) //check empty input filed
-		{
-			$("#output").html("Are you kidding me?");
-			return false
-		}
-		
-		var fsize = $('#FileInput')[0].files[0].size; //get file size
-		var ftype = $('#FileInput')[0].files[0].type; // get file type
-		
-
-		//allow file types 
-		switch(ftype)
-        {
-            case 'image/png': 
-			case 'image/gif': 
-			case 'image/jpeg': 
-			case 'image/pjpeg':
-			case 'text/plain':
-			case 'text/html':
-			case 'application/x-zip-compressed':
-			case 'application/pdf':
-			case 'application/msword':
-			case 'application/vnd.ms-excel':
-			case 'video/mp4':
-                break;
-            default:
-                $("#output").html("<b>"+ftype+"</b> Unsupported file type!");
-				return false
-        }
-		
-		//Allowed file size is less than 5 MB (1048576)
-		/*if(fsize>5242880) 
-		{
-			$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
-			return false
-		}*/
-				
-		$('#submit-btn').hide(); //hide submit button
-		$('#loading-img').show(); //hide submit button
-		$("#output").html("");  
-	}
-	else
-	{
-		//Output error to older unsupported browsers that doesn't support HTML5 File API
-		$("#output").html("Please upgrade your browser, because your current browser lacks some new features we need!");
-		return false;
-	}
-}
-
-//progress bar function
-function OnProgress(event, position, total, percentComplete)
-{
-    //Progress bar
-	$('#progressbox').show();
-    $('#progressbar').width(percentComplete + '%') //update progressbar percent complete
-    $('#statustxt').html(percentComplete + '%'); //update status text
-    if(percentComplete>50)
-        {
-            $('#statustxt').css('color','#000'); //change status text to white after 50%
-        }
-}
-
-//function to format bites bit.ly/19yoIPO
-function bytesToSize(bytes) {
-   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-   if (bytes == 0) return '0 Bytes';
-   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-}
-
-}); 
-
-</script>
-			
-				<h3>Ajax File Uploader</h3>
-				<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm">
-				<input name="FileInput" id="FileInput" type="file" />
-				<input name="FileOutput" id="FileOutput" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/"/>
-				<input name="Name_File_id" id="Name_File_id" type="hidden" value="<?php echo $recette_id; ?>"/>
-				<input type="hidden" name="index"  id="index" value="0" />
-				<input type="submit"  id="submit-btn" value="Upload" />
-				<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
-				</form>
-				<div id="progressbox" ><div id="progressbar"></div ><div id="statustxt">0%</div></div>
-				<div id="output"></div>
-			</div>
-			<div id="photos">
-
-			<?php
-				
-				$ressources_images = glob($nom_dossier."/" . $recette_id . "/*.jpg");
-				foreach ($ressources_images as $filename)
-				{
-					?>
-					<div id="photo<?php echo $filename; ?>">
-					 
-					<a class="photo_link" href="<?php echo $filename; ?>" data-lightbox="example-set"><img class="photo" src="<?php echo $filename; ?>" alt=""/></a>
-					<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'astuce" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'photos');"/>
-				
-<input type="radio"  <?php if($filename == $recette_image_principale) { echo 'checked="checked"';} ?> name="rec_img_princ" id = "rec_img_princ" value="<?php echo $filename; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
-				</div>
-				<?php
-				}
-			?>
-			
-			
-			</div>
-			<div id="videos">
-			
-				<?php
-					$ressources_videos = glob($nom_dossier."/" . $recette_id . "/*.mp4");
-					foreach ($ressources_videos as $filename_video)
+					else
 					{
-				?>
-						<div class="colonne_video">
-							<table>
-								<tr>
-									<th>Recette gateau</th>
-								</tr>
-									<td><br/></td>
-								<tr>
-									<td>
-										<video class="video_recette" controls src="<?php echo $filename_video; ?>">Ici la description alternative</video>
-									</td>
-								</tr>
-								<tr>
-									<td><br/></td>
-								</tr>
-							</table>
-						</div>
-				<?php				
-				}
-				?>
-			</div>
-	
-		</article>
-	</section>
-	
-	<section class="tags_recette">
-		<br/>
-		<br/>
-		<article>
-			<header>
-				<h3>
-					Tags
-				</h3>
-			</header>
-            <input name="tags" name="REC_TAG" id="REC_TAG" value="<?php echo $recette_tag; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)">
-		</article>
-	</section>
- </main>
+							?>
+							<div id="sousEtapes">
+							<?php 
+							if($etapes_recette_lien == 0)
+							{
+								echo $etapes_description;
+							}
+							else
+							{	
+								echo'<div id="sousEtapes">';
+								$i=0;
+								//Récupération données ingredient recette
+								$result_t_recette_lien_etapes = $bdd->query("select REC_ID, ETA_ID, ETA_TITRE, ETA_DESCRIPTION from T_RECETTE_ETAPES WHERE REC_ID = ".$etapes_recette_lien." order by ETA_ID");
+								$recette_lien_etapes = $result_t_recette_lien_etapes->fetchAll(PDO::FETCH_ASSOC);
+								foreach ($recette_lien_etapes as $row_recette_lien_etapes)
+								{
+									$i=$i+1;
+								?>
+									<div class="sousEtape">
+									<h4>
+								<?php
+									echo $i.'- '.$row_recette_lien_etapes['ETA_TITRE']; 
+								?>
+									</h4>
+								<?php
+									echo $row_recette_lien_etapes['ETA_DESCRIPTION']; 
+								?>
+									</br>
+									</br>
+									</div>
+								<?php
+								}
+							}
+							
+							?>
+							</div>
 
+						<?php
+					
+					}
+					?>
+					</div>
+				</article>
+				<br/>
+				<br/>
+				<br/>
+				<br/>
+			<?php
+			}
+		?>
+		</section>
+		<section class="astuce_remarque_recette" id="astuces_recette">
+			<br/>
+			<br/>
+			<article>
+				<header>
+					<h2>
+						Astuces/Remarques
+						<?php
+						if ($modifier == "O")
+						{
+						?>
+						&#160;<img class="ajout" src="images/insertion.png" title="Ajouter l'astuce" onclick="Ajout_Astuce(document.getElementById('Nras_id').value, <?php echo $recette_id; ?>);"/>
+						<input type="hidden" name="Nras_id" id="Nras_id" value="<?php echo $recette_a_max_id->MAX_ASTUCE; ?>"/>
+						<?php
+						}
+						?>
+					</h2>
+				<br/>
+				</header>
+				<div>
+				<ul class="astuces" id="astuces">
+				<?php
+				foreach ($recette_astuces as $row_recette_astuces)
+				{
+					$astuce_id =  $row_recette_astuces['RAS_ID'];
+					$astuce_description =  $row_recette_astuces['RAS_DESCRIPTION'];
+					
+					if ($modifier == "O")
+					{
+						?>
+						<li id="Astuce_<?php echo $astuce_id; ?>">
+						<?php echo $astuce_id; ?>.&#160;&#160;
+						<input type="hidden" name="ras_id-<?php echo $astuce_id; ?>" id="ras_id-<?php echo $astuce_id; ?>" value="<?php echo $astuce_id; ?>"/>
+						<textarea name="ras_description-<?php echo $astuce_id; ?>" id="ras_description-<?php echo $astuce_id; ?>" rows="4" cols="130" onchange="Update_champ_recette_astuce('ras_description-<?php echo $astuce_id; ?>', this.value, <?php echo $recette_id; ?>,'ras_id-<?php echo $astuce_id; ?>');"><?php echo $astuce_description; ?></textarea>
+						&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer l'astuce" onclick="supprimer_astuce(<?php echo $astuce_id; ?>, 'Astuce_<?php echo $astuce_id; ?>', <?php echo $recette_id; ?>);"/>
+						<br/>
+						<br/>
+						</li>
+				
+					<?php
+					}
+					else
+					{
+						echo '<li>';
+						echo $astuce_id.'.&#160;&#160';
+						echo $astuce_description;
+						echo '</li>';
+					}
+				}
+					?>
+				</ul>
+				</div>
+			</article>
+				<br/>
+				<br/>
+			<?php
+			if ($modifier == "O")
+			{
+				//AJOUTER UN BOUTON D'AJOUT D'ASTUCE
+			}
+			
+			?>
+
+		</section>
+		<section class="bonus_recette">
+			<article>
+				<br/>
+				<br/>
+				<header>
+					<h2>
+						Ressources associées
+					</h2>
+				</header>
+				<br/>
+				<div align="center">
+				
+						<script type="text/javascript">
+	$(document).ready(function() { 
+		var options = { 
+				target:   '#output',   // target element(s) to be updated with server response 
+				beforeSubmit:  beforeSubmit,  // pre-submit callback 
+				success:       afterSuccess,  // post-submit callback 
+				uploadProgress: OnProgress, //upload progress callback 
+				resetForm: true        // reset the form after successful submit 
+			}; 
+			
+		 $('#MyUploadForm').submit(function() { 
+				$(this).ajaxSubmit(options);  			
+				// always return false to prevent standard browser submit and page navigation 
+				return false; 
+			}); 
+			
+
+	//function after succesful file upload (when server response)
+	function afterSuccess()
+	{
+		$('#submit-btn').show(); //hide submit button
+		$('#loading-img').hide(); //hide submit button
+		$('#progressbox').delay( 1000 ).fadeOut(); //hide progress bar
+
+	}
+
+	//function to check file size before uploading.
+	function beforeSubmit(){
+		//check whether browser fully supports all File API
+	   if (window.File && window.FileReader && window.FileList && window.Blob)
+		{
+			
+			if( !$('#FileInput').val()) //check empty input filed
+			{
+				$("#output").html("Are you kidding me?");
+				return false
+			}
+			
+			var fsize = $('#FileInput')[0].files[0].size; //get file size
+			var ftype = $('#FileInput')[0].files[0].type; // get file type
+			
+
+			//allow file types 
+			switch(ftype)
+			{
+				case 'image/png': 
+				case 'image/gif': 
+				case 'image/jpeg': 
+				case 'image/pjpeg':
+				case 'text/plain':
+				case 'text/html':
+				case 'application/x-zip-compressed':
+				case 'application/pdf':
+				case 'application/msword':
+				case 'application/vnd.ms-excel':
+				case 'video/mp4':
+					break;
+				default:
+					$("#output").html("<b>"+ftype+"</b> Unsupported file type!");
+					return false
+			}
+			
+			//Allowed file size is less than 5 MB (1048576)
+			/*if(fsize>5242880) 
+			{
+				$("#output").html("<b>"+bytesToSize(fsize) +"</b> Too big file! <br />File is too big, it should be less than 5 MB.");
+				return false
+			}*/
+					
+			$('#submit-btn').hide(); //hide submit button
+			$('#loading-img').show(); //hide submit button
+			$("#output").html("");  
+		}
+		else
+		{
+			//Output error to older unsupported browsers that doesn't support HTML5 File API
+			$("#output").html("Please upgrade your browser, because your current browser lacks some new features we need!");
+			return false;
+		}
+	}
+
+	//progress bar function
+	function OnProgress(event, position, total, percentComplete)
+	{
+		//Progress bar
+		$('#progressbox').show();
+		$('#progressbar').width(percentComplete + '%') //update progressbar percent complete
+		$('#statustxt').html(percentComplete + '%'); //update status text
+		if(percentComplete>50)
+			{
+				$('#statustxt').css('color','#000'); //change status text to white after 50%
+			}
+	}
+
+	//function to format bites bit.ly/19yoIPO
+	function bytesToSize(bytes) {
+	   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+	   if (bytes == 0) return '0 Bytes';
+	   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+	   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+	}
+
+	}); 
+
+	</script>
+				
+					<h3>Ajax File Uploader</h3>
+					<form action="ajax/Upload_file/processupload.php" method="post" enctype="multipart/form-data" id="MyUploadForm">
+					<input name="FileInput" id="FileInput" type="file" />
+					<input name="FileOutput" id="FileOutput" type="hidden" value="../../ressources/<?php echo $recette_id; ?>/"/>
+					<input name="Name_File_id" id="Name_File_id" type="hidden" value="<?php echo $recette_id; ?>"/>
+					<input type="hidden" name="index"  id="index" value="0" />
+					<input type="submit"  id="submit-btn" value="Upload" />
+					<img src="images/ajax-loader.gif" id="loading-img" style="display:none;" alt="Please Wait"/>
+					</form>
+					<div id="progressbox" ><div id="progressbar"></div ><div id="statustxt">0%</div></div>
+					<div id="output"></div>
+				</div>
+				<div id="photos">
+
+				<?php
+					
+					$ressources_images = glob($nom_dossier."/" . $recette_id . "/*.jpg");
+					foreach ($ressources_images as $filename)
+					{
+						?>
+						<div id="photo<?php echo $filename; ?>">
+						 
+						<a class="photo_link" href="<?php echo $filename; ?>" data-lightbox="example-set"><img class="photo" src="<?php echo $filename; ?>" alt=""/></a>
+						<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer l\'astuce" onclick="supprimer_image('<?php echo $filename; ?>', 'photo<?php echo $filename; ?>', <?php echo $recette_id; ?>, 'photos');"/>
+					
+	<input type="radio"  <?php if($filename == $recette_image_principale) { echo 'checked="checked"';} ?> name="rec_img_princ" id = "rec_img_princ" value="<?php echo $filename; ?>" onchange="Update_champ_recette(this.id, this.value, <?php echo $recette_id; ?>)"/>
+					</div>
+					<?php
+					}
+				?>
+				
+				
+				</div>
+				<div id="videos">
+				
+					<?php
+						$ressources_videos = glob($nom_dossier."/" . $recette_id . "/*.mp4");
+						foreach ($ressources_videos as $filename_video)
+						{
+					?>
+							<div class="colonne_video">
+								<table>
+									<tr>
+										<th>Recette gateau</th>
+									</tr>
+										<td><br/></td>
+									<tr>
+										<td>
+											<video class="video_recette" controls src="<?php echo $filename_video; ?>">Ici la description alternative</video>
+										</td>
+									</tr>
+									<tr>
+										<td><br/></td>
+									</tr>
+								</table>
+							</div>
+					<?php				
+					}
+					?>
+				</div>
+		
+			</article>
+		</section>
+	 </main>
+	</div>
+</div>
 </body>
 </html>

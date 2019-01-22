@@ -3,7 +3,10 @@
 
 
 /* RESET STYLES */
-*, html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, label, fieldset, input, p, blockquote, th, td { margin:0; padding:0 }
+*, html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, label, fieldset, input, p, blockquote, th, td { 
+	margin:0; 
+	padding:0 ;
+}
 table { border-collapse:collapse; border-spacing:0 }
 fieldset, img { border:0 }
 address, caption, cite, code, dfn, em, strong, th, var { font-style:normal; font-weight:normal }
@@ -64,12 +67,19 @@ article, aside, figure, footer, header, hgroup, nav, section {display: block;}
 html{-webkit-font-smoothing:antialiased;
 overflow-x: hidden}
 
-a{color:#BA0707;}
-a:hover{color:#BA0707;text-decoration:underline;}
+a{
+	color:#3a3a3a;
+	-webkit-transition: all 0.2s ease-in-out 0s;
+   -moz-transition: all 0.2s ease-in-out 0s;
+   -o-transition: all 0.2s ease-in-out 0s;
+   -ms-transition: all 0.2s ease-in-out 0s;
+   transition: all 0.2s ease-in-out 0s;
+}
+a:hover{color:#710202;text-decoration:none;}
 
-body{background:#CFD8DC 	 no-repeat 0 0;
+body{background:#f1f1f1 	 no-repeat 0 0;
 color:#3E4156;
-font: 14px "Trebuchet MS", Helvetica, Arial, sans-serif;
+font: 16px "Acme";
 -webkit-font-smoothing: antialiased;
 -webkit-text-size-adjust: 100%;
 line-height:1;
@@ -79,41 +89,40 @@ width:100%;}
 h1{font-size:36px;
 line-height:1.3em; 
 text-align:center;
-font-family:"Lobster", "Comics Sans MS";
+font-family:"Acme";
 font-style: italic;
 }
 
 h2{font-size:32px;
 line-height:1.3em;
 text-align:center;
-font-family: "Comics Sans MS";
+font-family: "Acme";
 font-style: italic;
-color:white;
-background-color: #455A64;
+color:#3E4156;
 }
 
 h3{font-size:24px;
 line-height:1.3em;
-font-family:"Comics Sans MS";
+font-family:"Acme";
 font-style: italic;
-color:#455A64;
+color:#e07839;
 }
 
 h4{font-size:18px;
 line-height:1.3em;
 /*text-align:center;*/
-font-family:"Comics Sans MS";
+font-family:"Acme";
 font-style: italic;
 }
 
 h5{font-size:16px;
 text-align:center;
-font-family:"Comics Sans MS";
+font-family:"Acme";
 font-style: italic;
 }
 h6{font-size:14px;
 text-align:center;
-font-family:"Comics Sans MS";
+font-family:"Acme";
 font-style: italic;
 }
 
@@ -123,7 +132,18 @@ p,div, span{line-height:1.5em;}
 .clear{overflow: hidden;}
 
 
-.mainWrap{width:100%;margin:0 auto;position:fixed;z-index:900;}
+#menuNavigation{
+	width:100%;
+	margin:0 auto;
+	/*position:fixed;*/
+	position:absolute;
+	z-index:900;
+	top: 200px;
+}
+
+#menuNavigation.fixe { position: fixed;
+      top: 0px;
+}
 
 .title{margin:100px 0 20px 0;
 text-align:center;
@@ -131,17 +151,24 @@ color:#3E4156;}
 .back{text-align:center;}
 
 .navigation{display:block;
-background:#607D8B;
+background:#070707;
+opacity: 0.8;
 text-align: center;
+border-top : 2px solid #7C0202;
+border-bottom : 2px solid #7C0202;
 }
 
 
-.menu{display:block;}
+.menu{display:block;
+    padding-top: 10px;
+    padding-bottom: 10px;	
+}
 
 .menu li{display: inline-block;
 position: relative;
 z-index:100;
-width:auto}
+width:auto;
+}
 
 /*.menu li:first-child{margin-left:0;}*/
 
@@ -158,8 +185,10 @@ color:#ffffff;
    transition: all 0.2s ease-in-out 0s;
 }
 
-.menu li a:hover, .menu li:hover > a{color:#ffffff;
-background:#CFD8DC;}
+.menu li a:hover, .menu li:hover > a{color:#7C0202;
+/*background:#f1f1f1;*/
+opacity: 0.8;
+}
 
 .menu ul {visibility: hidden;
 opacity: 0;
@@ -167,9 +196,9 @@ margin: 0;
 padding: 0 0 10px 0;
 width: 510px;
 position: absolute;
-top: 43px;
+top: 53px;
 left: 0px;
-background: #ffffff;
+background: #070707;
 -webkit-transition: opacity 500ms, visibility 500ms;
   transition: opacity 500ms, visibility 500ms;
   border-radius: 0 0 10px 10px;
@@ -186,9 +215,9 @@ border-bottom : 1px solid grey;
 .menu ul li a {font-size:12px;
 font-weight:normal;
 display:block;
-color:#797979;
-border-left:3px solid #ffffff;
-background:#ffffff;}
+color:#f1f1f1;
+border-left:3px solid #070707;
+background:#070707;}
 
 .menu ul li a:hover, .menu ul li:hover > a{
 background:#f0f0f0;

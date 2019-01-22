@@ -15,8 +15,12 @@ $type_ingredient = $result_t_type_ingredient->fetchAll(PDO::FETCH_ASSOC);
 $result_t_random_recette = $bdd->query("select REC_ID from T_RECETTE order by rand() limit 1");
 $random_recette = $result_t_random_recette->fetch(PDO::FETCH_OBJ);
 
+//Récupération données type tuto
+$result_t_categorie_tuto = $bdd->query("select TCT_ID, TCT_LIBELLE FROM T_CATEGORIE_TUTO order by TCT_ID");
+$categorie_tuto = $result_t_categorie_tuto->fetchAll(PDO::FETCH_ASSOC);
 
-echo '<div class="mainWrap">
+
+echo '<div id="menuNavigation">
 	 
 	 <a id="touch-menu" class="mobile-menu" href="#"><i class="icon-reorder"></i>Menu</a>
 		
@@ -71,8 +75,22 @@ echo '<div class="mainWrap">
 	   
 	   echo '</ul>
 	  </li>
-	  <li><a  href="#"><i class="icon-bullhorn"></i>APPRENDRE</a></li>
-	  <li><a  href="#"><i class="icon-envelope-alt"></i>VIDEOS</a></li>
+	  <li><a  href="#"><i class="icon-bullhorn"></i>TUTORIELS</a>
+	  <ul class="sub-menu">';
+	   foreach ($categorie_tuto as $row_categorie_tuto)
+			{
+				
+				$categorie_tuto_id =  $row_categorie_tuto['TCT_ID'];
+				$categorie_tuto_titre =  $row_categorie_tuto['TCT_LIBELLE'];
+			
+			
+				
+				echo '<li><a href="liste_tutos.php?categorie_tuto='.$categorie_tuto_id.'">'.$categorie_tuto_titre.'</a></li>';
+		 } 
+		
+	   
+	   echo '</ul>
+	  </li>
 	  <li><a  href="#"><i class="icon-link"></i>LIENS UTILES</a></li>
 	  <li><a  href="recette.php?recette_id='.$random_recette->REC_ID.'"><i class="icon-magic"></i>RECETTE AU HASARD</a></li>
 	  <li><a  href="#"><i class="icon-cogs"></i>PARAMETRAGE</a>
@@ -83,6 +101,8 @@ echo '<div class="mainWrap">
 			<li><a href="parametrage.php?param=materiel">Matériel</a></li>
 			<li><a href="parametrage.php?param=unite_ingredient">Unités d\'ingrédient</a></li>
 			<li><a href="parametrage.php?param=unite_fabrication">Unités de fabrication</a></li>
+			<li><a href="parametrage.php?param=theme">Thèmes</a></li>
+			<li><a href="parametrage.php?param=categorie_tuto">Catégories tutoriels</a></li>
 		</ul>
 	  </li>
 	  <li><a  href="recherche.php"><i class="icon-search"></i></a></li>

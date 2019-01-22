@@ -133,7 +133,8 @@ if (isset($_POST['valider']))
 	<link rel="stylesheet" type="text/css" href="css/tooltipster/tooltipster.bundle.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="js/tooltipster/tooltipster.bundle.min.js"></script>
-	
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>
 	<!-- Style menu -->
 	<link rel="stylesheet" href="css/menu/style.css" type="text/css" media="screen">
 	
@@ -170,6 +171,9 @@ if (isset($_POST['valider']))
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+
+
+window.addEventListener("scroll", scrolled, false);
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script> 
@@ -189,6 +193,8 @@ if (isset($_POST['valider']))
 
  </header>
  <main>
+	<?php include('inc/bandeau_entete.inc.php'); ?>
+
 	<header>
 		<div id="titre_recherche">
 			<h1>Recherche</h1>

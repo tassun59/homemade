@@ -94,15 +94,14 @@ if (isset($_GET['ingredient']))
 	<link rel="stylesheet" type="text/css" media="screen and (max-width:600px)" href="css/style_max_600.css">
 	<link rel="stylesheet" type="text/css" media="print" href="css/style_print.css"/>	
 	
-	
-	
 	<!-- menu -->
     <link rel="stylesheet" href="font/menu/css/font-awesome.css" >
 	
  
 	
-<script src="js/menu/menu.js" type="text/javascript"></script> 
-
+	<script src="js/menu/menu.js" type="text/javascript"></script> 
+	<!-- Javascripts commun a toutes les pages -->
+	<script type="text/javascript" src="js/commun.js"></script>	
 	<script>
         $(document).ready(function() {
             $('.tooltip').tooltipster();
@@ -117,6 +116,8 @@ if (isset($_GET['ingredient']))
 			document.getElementById(lien).style.display='none';
 			document.getElementById(lien2).style.display='block';
 		}
+		
+		window.addEventListener("scroll", scrolled, false);
     </script>
 		
 	<script src="js/recette.js" type="text/javascript"></script>
@@ -134,11 +135,9 @@ if (isset($_GET['ingredient']))
   <p><input type="search"><input type ="button" id="button_search" value="Ok"/><a class="lien_discret" href="#">Recherche avancée ...<a/></p>
 </div>-->
 
-
+	 <?php include('inc/bandeau_entete.inc.php'); ?>
 <div class="fil_ariane">
  	<nav>
-		<br/>
-		<br/>
 		<a href="#">Accueil</a> > <a href="#">Recettes</a> >
 		<?php 
 			if (isset($_GET['sous_categorie']))
@@ -158,14 +157,9 @@ if (isset($_GET['ingredient']))
 		?>
 	</nav>
 </div>
+
 <br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+
  </header>
  <main>
 	<header>
@@ -187,13 +181,12 @@ if (isset($_GET['ingredient']))
 				<?php 
 					}
 				?>
-				
-				
+
 			</h1>
 			<p>Toutes mes recettes :</p>
 		</div>
 	</header>
-	<br/><br/>
+
 	<?php include('inc/liste_recettes.inc.php'); ?>
 
  </main>

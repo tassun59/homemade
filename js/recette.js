@@ -368,7 +368,7 @@ var li = document.createElement("li");
 li.setAttribute("id", "Astuce_" + Astuce_suiv);
 // l'ajoute à la fin du corps du document
 document.getElementById("astuces").appendChild(li);
-document.getElementById("Astuce_" + Astuce_suiv).innerHTML = Astuce_suiv+'.&#160;&#160;<input type="hidden" name="ras_id-'+Astuce_suiv+'" id="ras_id-'+Astuce_suiv+'" value="'+Astuce_suiv+'"/><textarea name="ras_description-'+Astuce_suiv+'" id="ras_description-'+Astuce_suiv+'" rows="3" cols="200" onchange="Update_champ_recette_astuce(\'ras_description-'+Astuce_suiv+'\', this.value, '+rec_id+',\'ras_id-'+Astuce_suiv+'\');"></textarea>&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer l\'astuce" onclick="supprimer_astuce('+Astuce_suiv+', \'Astuce_'+Astuce_suiv+'\', '+ rec_id +');"/><br/><br/>';
+document.getElementById("Astuce_" + Astuce_suiv).innerHTML = Astuce_suiv+'.&#160;&#160;<input type="hidden" name="ras_id-'+Astuce_suiv+'" id="ras_id-'+Astuce_suiv+'" value="'+Astuce_suiv+'"/><textarea name="ras_description-'+Astuce_suiv+'" id="ras_description-'+Astuce_suiv+'" rows="3" cols="200" onchange="Update_champ_recette_astuce(\'ras_description-'+Astuce_suiv+'\', this.value, '+rec_id+',\'ras_id-'+Astuce_suiv+'\');"></textarea>&#160;&#160;<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer l\'astuce" onclick="supprimer_astuce('+Astuce_suiv+', \'Astuce_'+Astuce_suiv+'\', '+ rec_id +');"/><br/><br/>';
 document.getElementById("Nras_id").value = Astuce_suiv;
 }
 
@@ -492,4 +492,28 @@ function Etape_realisee(checkox,etapes_id)
 		document.getElementById("Etape_" + etapes_id).style.textDecoration="initial";
 		document.getElementById("Etape_" + etapes_id).style.opacity="initial";
 	}
+}
+
+function Ajouter_realisation (rec_nb_realisations, rec_id)
+{
+	document.getElementById(rec_nb_realisations).innerHTML = parseInt(document.getElementById(rec_nb_realisations).innerHTML) + 1;
+	Update_champ_recette(rec_nb_realisations, document.getElementById(rec_nb_realisations).innerHTML, rec_id);
+}
+
+function Enlever_realisation (rec_nb_realisations, rec_id)
+{
+	document.getElementById(rec_nb_realisations).value = parseInt(document.getElementById(rec_nb_realisations).value) - 1;
+	Update_champ_recette(rec_nb_realisations, document.getElementById(rec_nb_realisations).value, rec_id);
+}
+
+function Calculer_proportions(value, recette_ingredient_max_id)
+{
+	for (i=1; i <= recette_ingredient_max_id; ++i) {
+        if (document.getElementById('quantite_ingredient-' + i)) {
+            var result = 0;
+			result = (parseFloat(document.getElementById('quantite_ingredient-' + i).innerHTML) / parseFloat(document.getElementById('rec_nb_convives_tmp').value)) * parseFloat(value);
+            document.getElementById('quantite_ingredient-' + i).innerHTML = Number.parseFloat(result).toFixed(2);
+        }
+    }
+	document.getElementById('rec_nb_convives_tmp').value = value;
 }

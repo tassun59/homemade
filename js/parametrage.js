@@ -36,7 +36,7 @@ function ajout_ligne_param(idChpAjout, chpAUpdater, NomTable, chpId){
 	var parent = document.getElementById("liste");
 	parent.appendChild(div);
 	
-	document.getElementById("ligne-" + idValeur).innerHTML = '<input type="hidden" name="id-'+idValeur+'" id="id-'+idValeur+'" value="'+idValeur+'"/><input type="text" name="libelle-'+idValeur+'" id="libelle-'+idValeur+'" value="'+document.getElementById(idChpAjout).value+'" onchange="Update_champ_param(this.id, this.value, '+idValeur+', '+NomTable+', '+chpId+');"/>&#160;<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer la ligne" onclick="Supprimer_ligne_param('+idValeur+', '+NomTable+', \'liste\', \'ligne-'+idValeur+'\', '+chpId+');"/>';
+	document.getElementById("ligne-" + idValeur).innerHTML = '<input type="hidden" name="id-'+idValeur+'" id="id-'+idValeur+'" value="'+idValeur+'"/><input type="text" name="libelle-'+idValeur+'" id="libelle-'+idValeur+'" value="'+document.getElementById(idChpAjout).value+'" onchange="Update_champ_param(this.id, this.value, '+idValeur+', '+NomTable+', '+chpId+');"/>&#160;<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la ligne" onclick="Supprimer_ligne_param('+idValeur+', '+NomTable+', \'liste\', \'ligne-'+idValeur+'\', '+chpId+');"/>';
 	
 }
 
@@ -114,7 +114,7 @@ function ajout_ligne_param_2_champs(idChpAjout, chpAUpdater, idChpAjout2, chpAUp
 	var parent = document.getElementById("liste");
 	parent.appendChild(div);
 	
-	document.getElementById("ligne-" + idValeur).innerHTML = '<input type="hidden" name="id-'+idValeur+'" id="id-'+idValeur+'" value="'+idValeur+'"/><input type="text" name="libelle-'+idValeur+'" id="libelle-'+idValeur+'" value="'+document.getElementById(idChpAjout).value+'" onchange="Update_champ_param(this.id, this.value, '+idValeur+', '+NomTable+', '+chpId+');"/>&#160;'+listetypeIngredient+'&#160;<img class="supprimer_petit" src="images/Supprimer.PNG" title="Supprimer la ligne" onclick="Supprimer_ligne_param('+idValeur+', '+NomTable+', \'liste\', \'ligne-'+idValeur+'\', '+chpId+');"/>';
+	document.getElementById("ligne-" + idValeur).innerHTML = '<input type="hidden" name="id-'+idValeur+'" id="id-'+idValeur+'" value="'+idValeur+'"/><input type="text" name="libelle-'+idValeur+'" id="libelle-'+idValeur+'" value="'+document.getElementById(idChpAjout).value+'" onchange="Update_champ_param(this.id, this.value, '+idValeur+', '+NomTable+', '+chpId+');"/>&#160;'+listetypeIngredient+'&#160;<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la ligne" onclick="Supprimer_ligne_param('+idValeur+', '+NomTable+', \'liste\', \'ligne-'+idValeur+'\', '+chpId+');"/>';
 	
 	document.getElementById(idChpAjout).value = '';
 	document.getElementById(idChpAjout2).value = '';
