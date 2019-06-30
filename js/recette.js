@@ -32,7 +32,7 @@ function Recuperer_Rin_Id(rec_id, rie_id, ing_id){
 }
 
 
-function Ajout_Ligne(tableID, AjoutID, listeUnites, rec_id, rie_id, ing_id){
+function Ajout_Ligne(tableID, AjoutID, listeUnites, rec_id, rie_id, ing_id, uni_id){
 	
 	
 	
@@ -49,9 +49,19 @@ function Ajout_Ligne(tableID, AjoutID, listeUnites, rec_id, rie_id, ing_id){
 		xhr.send(null);
 
 	var Rin_d = Recuperer_Rin_Id(rec_id, rie_id, document.getElementById(ing_id).value);
-	var listeUnite = '<select name="uni_id-'+Rin_d+'" id="uni_id-'+Rin_d+'" onchange="Update_champ_recette_ingredient(this.id, this.value, '+Rin_d+', '+rec_id+')"><option/>';
+	var listeUnite = '<select disabled="disbaled" name="uni_id-'+Rin_d+'" id="uni_id-'+Rin_d+'" onchange="Update_champ_recette_ingredient(this.id, this.value, '+Rin_d+', '+rec_id+')"><option/>';
 	for (var i = 1; i < listeUnites.length; i++) {
-		listeUnite = listeUnite + '<option value="'+i+'">'+listeUnites[i]+'</option>'
+		if(listeUnites[i])
+		{
+			if(i == document.getElementById(uni_id).value)
+			{
+				listeUnite = listeUnite + '<option value="'+i+'" selected="selected">'+listeUnites[i]+'</option>';
+			}
+			else
+			{
+				listeUnite = listeUnite + '<option value="'+i+'">'+listeUnites[i]+'</option>';
+			}
+		}
 	}
 	listeUnite = listeUnite + '</select>';
 	var newRow = document.getElementById(tableID).insertRow(-1);
@@ -61,6 +71,7 @@ function Ajout_Ligne(tableID, AjoutID, listeUnites, rec_id, rie_id, ing_id){
 	newCell.innerHTML = '<td class="quantite_ingredient"><input type="hidden" name="chp:recette_ingredient_id-'+Rin_d+'" id="chp:recette_ingredient_id-'+Rin_d+'" value="'+Rin_d+'"/><input type="text" name="rin_qte-'+Rin_d+'" id="rin_qte-'+Rin_d+'" onchange="Update_champ_recette_ingredient(this.id, this.value, '+Rin_d+', '+rec_id+')"/>&#160;&#160;'+listeUnite+'</td>';
 	document.getElementById(AjoutID).value = "";
 	document.getElementById(ing_id).value = "";
+	document.getElementById(uni_id).value = "";
 }
 
 

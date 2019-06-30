@@ -5,7 +5,7 @@
 	include('admin/sql.php');
 	
 	//Récupération données type source
-	$result_param = $bdd->prepare("select ING_ID, ING_LIBELLE, TIN_ID FROM T_INGREDIENT order by ING_LIBELLE;");
+	$result_param = $bdd->prepare("select ING_ID, ING_LIBELLE, TIN_ID, UNI_ID, COUT_UNITAIRE FROM T_INGREDIENT order by ING_LIBELLE;");
 	$result_param->execute();
 	$param = $result_param->fetchAll(PDO::FETCH_ASSOC);
 
@@ -13,11 +13,16 @@
 	$result_type_ingredient->execute();
 	$type_ingredient = $result_type_ingredient->fetchAll(PDO::FETCH_ASSOC);
 
+	$result_unites = $bdd->prepare("select UNI_ID, UNI_LIBELLE FROM T_UNITE order by UNI_LIBELLE;");
+	$result_unites->execute();
+	$unites = $result_unites->fetchAll(PDO::FETCH_ASSOC);
 	
 	$v_table = 'T_INGREDIENT';
 	$v_chpId = 'ING_ID';
 	$v_chpLibelle = 'ING_LIBELLE';
 	$v_chpTypeIngredient = 'TIN_ID';
+	$v_chpUnite = 'UNI_ID';
+	$v_chpCoutUnitaire = 'COUT_UNITAIRE';
 
 ?>
 
@@ -126,6 +131,8 @@
 					$id =  $row_param['ING_ID'];
 					$libelle =  $row_param['ING_LIBELLE'];
 					$typeIngredient =  $row_param['TIN_ID'];
+					$unite =  $row_param['UNI_ID'];
+					$countUnitaire =  $row_param['COUT_UNITAIRE'];
 				
 					
 					?>
@@ -145,6 +152,20 @@
 						?>
 					</select>
 					&#160;
+					<select name="champ3" id="champ3" onchange="Update_champ_param('<?php echo $v_chpUnite; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>')">
+						<option/>
+						<?php 
+						foreach ($unites as $row_unites)
+						{
+						?>
+							<option value=<?php echo $row_unites['UNI_ID'];?> <?php if($row_unites['UNI_ID'] == $unite) { echo ' selected="selected"';} ?>> <?php echo $row_unites['UNI_LIBELLE']; ?></option>
+						<?php 
+						}
+						?>
+					</select>
+					&#160;
+					<input type="text" name="champ4-<?php echo $id; ?>" id="champ4-<?php echo $id; ?>" value="<?php echo $countUnitaire; ?>" onchange="Update_champ_param('<?php echo $v_chpCoutUnitaire; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>
+					&#160;
 					<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la ligne" onclick="Supprimer_ligne_param('id-<?php echo $id; ?>', '<?php echo $v_table; ?>', 'liste', 'ligne-<?php echo $id; ?>', '<?php echo $v_chpId; ?>');"/>
 					</div>
 					<?php
@@ -157,10 +178,16 @@
 			&#160;
 			<script type='text/javascript'>
 			liste_type_ingredient = new Array();
+			liste_unites = new Array();
 			<?php
 				foreach($type_ingredient as $row_type_ingredient){
 				 
 					echo "liste_type_ingredient[".$row_type_ingredient['TIN_ID']."] = '".$row_type_ingredient['TIN_LIBELLE']."';";
+				 
+				}
+				foreach($unites as $row_unite){
+				 
+					echo "liste_unites[".$row_unite['UNI_ID']."] = '".$row_unite['UNI_LIBELLE']."';";
 				 
 				}
 			?>	 
@@ -175,8 +202,23 @@
 				<?php 
 				}
 				?>
-			</select>						
-			<img class="ajout" src="images/insertion.png" title="Ajouter la ligne" onclick="ajout_ligne_param_2_champs('Nlibelle', '<?php echo $v_chpLibelle; ?>', 'Nchamp2', '<?php echo $v_chpTypeIngredient; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>', liste_type_ingredient);"/>
+			</select>	
+			&#160;			
+			<select name="Nchamp3" id="Nchamp3">
+				<option/>
+				<?php 
+				foreach ($unites as $row_unites)
+				{
+				?>
+					<option value=<?php echo $row_unites['UNI_ID'];?>> <?php echo $row_unites['UNI_LIBELLE']; ?></option>
+				<?php 
+				}
+				?>
+			</select>
+			&#160;
+			<input type="text" name="Nchamp4" id="Nchamp4"/>
+			&#160;
+			<img class="ajout" src="images/insertion.png" title="Ajouter la ligne" onclick="ajout_ligne_param_4_champs('Nlibelle', '<?php echo $v_chpLibelle; ?>', 'Nchamp2', '<?php echo $v_chpTypeIngredient; ?>', 'Nchamp3', '<?php echo $v_chpUnite; ?>', 'Nchamp4', '<?php echo $v_chpCoutUnitaire; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>', liste_type_ingredient, liste_unites);"/>
 					
 		</div>
 	</section>	

@@ -1073,7 +1073,9 @@ input[id^="rin_qte-"], input[id^="rec_id_lien_coeff-"]{
 	width: 45px;
 }
 
-
+input[id^="champ4-"], input[id="Nchamp4"]{
+	width: 30px;
+}
 
 select{
     display: inline-block;
@@ -1171,7 +1173,13 @@ section[id=parametrage]{
 }
 
 section[id=type_ingredient]{
-	width: 450px;	
+	width: 700px;	
+	margin-left: auto;
+	margin-right: auto;
+}
+
+section[id=couts]{
+	width: 700px;	
 	margin-left: auto;
 	margin-right: auto;
 }

@@ -112,7 +112,7 @@ $count_recette_materiel = $result_t_recette_materiel->rowCount();
 $rupture_count_recette_materiel = ceil($count_recette_materiel / 3);
 
 //Récupération données ingrédients
-$result_t_ingredients = $bdd->query("select ING_ID, ING_LIBELLE FROM T_INGREDIENT order by ING_ID");
+$result_t_ingredients = $bdd->query("select ING_ID, ING_LIBELLE, UNI_ID FROM T_INGREDIENT order by ING_ID");
 $ingredients = $result_t_ingredients->fetchAll(PDO::FETCH_ASSOC);
 
 //Récupération données entete ingredient recette
@@ -146,6 +146,28 @@ $unite_fabrication = $result_t_unite_fabrication->fetchAll(PDO::FETCH_ASSOC);
 // liste des recette techniques de base
 $result_t_recette_technique_base = $bdd->query("select REC_ID, REC_TITRE FROM T_RECETTE where REC_CATEGORIE=1 AND REC_ID != ".$recette_id."");
 $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_ASSOC);
+
+// Prix achat
+$result_prix_achat = $bdd->query("select round(SUM((SELECT sum(RIN.RIN_QTE*ING.COUT_UNITAIRE) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
+LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
+WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN = 0)
++
+(SELECT sum(RIN.RIN_QTE*ING.COUT_UNITAIRE) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
+LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
+WHERE RIE.REC_ID in (
+SELECT REC_ID_LIEN FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN != 0))) / REC_NB_CONVIVES,2) as cout_unitaire from T_RECETTE where REC_ID=".$recette_id.";");
+$prix_achat = $result_prix_achat->fetch(PDO::FETCH_OBJ);
+
+$result_cout_fabrication = $bdd->query("select round(sum((SELECT COU_VALEUR * 0.25 FROM `T_COUTS` WHERE COU_id = 2)
++
+(SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 1)
++
+(SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON + REC_TPS_REPOS + REC_TPS_PREPA from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 4)) / REC_NB_CONVIVES,2) as cout_unitaire_fabrication from T_RECETTE where REC_ID=".$recette_id.";");
+$cout_fabrication = $result_cout_fabrication->fetch(PDO::FETCH_OBJ);
+
 
 ?>
 
@@ -513,6 +535,35 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 		<!-- temps préparation -->
 		<div class="temps_preparation">
 			<header>
+				<h2>Coûts/prix à la part</h2>
+			</header>
+			<br/>
+			<div>
+				<?php
+					// recuperation libelle de l unite de fabrication
+					foreach ($unite_fabrication as $row_unite_fabrication)
+					{
+						$unite_fabrication_libelle = '';
+						if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id)
+						{
+							$unite_fabrication_libelle = $row_unite_fabrication['FAB_LIBELLE'];
+							break;
+						}
+					}
+				?>
+				Coût d'achat : <?php echo $prix_achat->cout_unitaire;?> € par <?php echo $unite_fabrication_libelle;?>.
+				<br/>
+				Coût de fabrication : <?php echo $cout_fabrication->cout_unitaire_fabrication;?> € par <?php echo $unite_fabrication_libelle;?>.
+				<br/>
+				Prix de revient : <?php echo $prix_achat->cout_unitaire + $cout_fabrication->cout_unitaire_fabrication;?> € par <?php echo $unite_fabrication_libelle;?>.
+				<br/>
+				Prix de vente : 
+			</div>	
+		</div>
+		<!-- fin temps preparation -->
+		<!-- temps préparation -->
+		<div class="temps_preparation">
+			<header>
 				<h2>Préparations</h2>
 			</header>
 			<br/>
@@ -746,18 +797,6 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 			<article>
 				<header>
 					<h2>
-						<?php
-							// recuperation libelle de l unite de fabrication
-							foreach ($unite_fabrication as $row_unite_fabrication)
-							{
-								$unite_fabrication_libelle = '';
-								if($row_unite_fabrication['FAB_ID'] == $recette_uni_fab_id)
-								{
-									$unite_fabrication_libelle = $row_unite_fabrication['FAB_LIBELLE'];
-									break;
-								}
-							}
-						?>
 						Ingrédients&#160;:&#160;</br>
 							<span class="nbPersonnes">
 								<?php
@@ -819,7 +858,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 						
 						$liste_ingredients="";
 						//foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'"'.$row_ingredients["ING_LIBELLE"].'",';
-						foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'["'.$row_ingredients["ING_LIBELLE"].'","'.$row_ingredients["ING_ID"].'"],';
+						foreach ($ingredients as $row_ingredients) $liste_ingredients = $liste_ingredients.'["'.$row_ingredients["ING_LIBELLE"].'","'.$row_ingredients["ING_ID"].'","'.$row_ingredients["UNI_ID"].'"],';
 						//on cree une variable pour la liste des unités en ajout
 						$liste_unite = "";
 					?>
@@ -882,7 +921,7 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 											<td class="quantite_ingredient">
 												<input type="hidden" name="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="chp:recette_ingredient_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value="<?php echo $row_recette_ingredient['RIN_ID']; ?>"/>
 												<input type="text" name="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="rin_qte-<?php echo $row_recette_ingredient['RIN_ID']; ?>" value=" <?php echo $row_recette_ingredient['RIN_QTE']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"/>
-												<select name="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"><option/>
+												<select disabled="disbaled" name="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" id="uni_id-<?php echo $row_recette_ingredient['RIN_ID']; ?>" onchange="Update_champ_recette_ingredient(this.id, this.value, <?php echo $row_recette_ingredient['RIN_ID']; ?>, <?php echo $recette_id; ?>)"><option/>
 													<?php
 													foreach ($unite_mesure as $row_unite_mesure)
 													{
@@ -926,7 +965,8 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 									<td>
 										<input id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" type="hidden" id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"/>
 										<input id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" autofocus type="text" id="ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" placeholder="Ajouter un ingrédient"/>
-										<img class="ajout" src="images/insertion.png" title="Ajouter l'ingrédient" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>
+										<input id="ingredientsUnite-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>" type="hidden" id="ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>"/>
+										<img class="ajout" src="images/insertion.png" title="Ajouter l'ingrédient" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredientsUnite-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>
 										<!--<INPUT type="image" class="ajout" src="images/insertion.png" onclick="Ajout_Ligne('tableau_ingredient-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', 'ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>', liste_unite, <?php echo $recette_id; ?>, <?php echo $row_recette_ingredient_entete['RIE_ID']; ?>, 'ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>');"/>-->
 										<br/>
 										
@@ -952,11 +992,12 @@ $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_
 												renderItem: function (item, search){
 													search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 													var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-													return '<div class="autocomplete-suggestion" data-ingredient="'+item[0]+'" data-id="'+item[1]+'" data-val="'+search+'"> '+item[0].replace(re, "<b>$1</b>")+'</div>';
+													return '<div class="autocomplete-suggestion" data-ingredient="'+item[0]+'" data-id="'+item[1]+'" data-unite="'+item[2]+'" data-val="'+search+'"> '+item[0].replace(re, "<b>$1</b>")+'</div>';
 												},
 												onSelect: function(e, term, item){
 													document.getElementById('ingredients-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('ingredient');
 													document.getElementById('ingredientsId-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('id');
+													document.getElementById('ingredientsUnite-<?php echo $row_recette_ingredient_entete['RIE_ID']; ?>').value = item.data('unite');
 													//alert('Item "'+item.data('ingredient')+' ('+item.data('id')+')" selected by '+(e.type == 'keydown' ? 'pressing enter' : 'mouse click')+'.');
 												}	
 											});

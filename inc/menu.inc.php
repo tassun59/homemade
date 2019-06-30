@@ -103,6 +103,7 @@ echo '<div id="menuNavigation">
 			<li><a href="parametrage.php?param=unite_fabrication">Unités de fabrication</a></li>
 			<li><a href="parametrage.php?param=theme">Thèmes</a></li>
 			<li><a href="parametrage.php?param=categorie_tuto">Catégories tutoriels</a></li>
+			<li><a href="parametrage_couts.php">Gestion des coûts</a></li>
 		</ul>
 	  </li>
 	  <li><a  href="recherche.php"><i class="icon-search"></i></a></li>

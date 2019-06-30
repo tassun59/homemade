@@ -24,7 +24,7 @@ try
 
 //Affichage de l'erreur SQL
 	if ($result_t_param == TRUE) {
-		echo '<input type="text" name="id_param" id="id_param" value="'.$t_param->max.'"/><input type="hidden" name="result" id="result" value="succes"/>Récupération id_param avec succès !';
+		echo '<input type="hidden" name="id_param" id="id_param" value="'.$t_param->max.'"/><input type="hidden" name="result" id="result" value="succes"/>Récupération id_param avec succès !';
 	}
 	if ($result_t_param == FALSE)
 		echo '<input type="hidden" name="result" id="result" value="echec"/>Echec Récupération id_param !';
