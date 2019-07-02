@@ -164,8 +164,8 @@
 						?>
 					</select>
 					&#160;
-					<input type="text" name="champ4-<?php echo $id; ?>" id="champ4-<?php echo $id; ?>" value="<?php echo $countUnitaire; ?>" onchange="Update_champ_param('<?php echo $v_chpCoutUnitaire; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>
-					&#160;
+					<input type="text" name="champ4-<?php echo $id; ?>" id="champ4-<?php echo $id; ?>" value="<?php echo $countUnitaire; ?>" onchange="Update_champ_param('<?php echo $v_chpCoutUnitaire; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>€/kg
+					&#160;&#160;&#160;
 					<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la ligne" onclick="Supprimer_ligne_param('id-<?php echo $id; ?>', '<?php echo $v_table; ?>', 'liste', 'ligne-<?php echo $id; ?>', '<?php echo $v_chpId; ?>');"/>
 					</div>
 					<?php
@@ -216,7 +216,7 @@
 				?>
 			</select>
 			&#160;
-			<input type="text" name="Nchamp4" id="Nchamp4"/>
+			<input type="text" name="Nchamp4" id="Nchamp4"/>€/kg
 			&#160;
 			<img class="ajout" src="images/insertion.png" title="Ajouter la ligne" onclick="ajout_ligne_param_4_champs('Nlibelle', '<?php echo $v_chpLibelle; ?>', 'Nchamp2', '<?php echo $v_chpTypeIngredient; ?>', 'Nchamp3', '<?php echo $v_chpUnite; ?>', 'Nchamp4', '<?php echo $v_chpCoutUnitaire; ?>', '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>', liste_type_ingredient, liste_unites);"/>
 					

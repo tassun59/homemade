@@ -148,7 +148,7 @@ $result_t_recette_technique_base = $bdd->query("select REC_ID, REC_TITRE FROM T_
 $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_ASSOC);
 
 // Prix achat
-$result_prix_achat = $bdd->query("select round(SUM((SELECT sum(RIN.RIN_QTE*ING.COUT_UNITAIRE) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+$result_prix_achat = $bdd->query("select round(SUM((SELECT sum(RIN.RIN_QTE*(ING.COUT_UNITAIRE / 1000)) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
 LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
 LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
 WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN = 0)
