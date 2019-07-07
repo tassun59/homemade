@@ -153,7 +153,7 @@ LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
 LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
 WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN = 0)
 +
-(SELECT sum(RIN.RIN_QTE*ING.COUT_UNITAIRE) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+(SELECT IFNULL(sum(RIN.RIN_QTE*ING.COUT_UNITAIRE),0) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
 LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
 LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
 WHERE RIE.REC_ID in (
@@ -165,7 +165,7 @@ $result_cout_fabrication = $bdd->query("select round(sum((SELECT COU_VALEUR * 0.
 +
 (SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 1)
 +
-(SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON + REC_TPS_REPOS + REC_TPS_PREPA from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 4)) / REC_NB_CONVIVES,2) as cout_unitaire_fabrication from T_RECETTE where REC_ID=".$recette_id.";");
+(SELECT (COU_VALEUR / 60 * (select REC_TPS_PREPA from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 4)) / REC_NB_CONVIVES,2) as cout_unitaire_fabrication from T_RECETTE where REC_ID=".$recette_id.";");
 $cout_fabrication = $result_cout_fabrication->fetch(PDO::FETCH_OBJ);
 
 

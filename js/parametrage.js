@@ -143,7 +143,7 @@ function ajout_ligne_param_4_champs(idChpAjout, chpAUpdater, idChpAjout2, chpAUp
 	
 	var listeUnite = '<select name="champ3-'+idValeur+'" id="champ3-'+idValeur+'" onchange="Update_champ_param(chpAUpdater3, this.value, '+idValeur+', '+NomTable+', '+chpId+'))"><option/>';
 	for (var i = 1; i < liste_unites.length; i++) {
-		if(listeUnites[i])
+		if(liste_unites[i])
 		{
 			if(i == document.getElementById(idChpAjout3).value)
 			{
