@@ -164,7 +164,7 @@
 						?>
 					</select>
 					&#160;
-					<input type="text" name="champ4-<?php echo $id; ?>" id="champ4-<?php echo $id; ?>" value="<?php echo $countUnitaire; ?>" onchange="Update_champ_param('<?php echo $v_chpCoutUnitaire; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/>€/kg
+					<input type="text" name="champ4-<?php echo $id; ?>" id="champ4-<?php echo $id; ?>" value="<?php echo $countUnitaire; ?>" onchange="Update_champ_param('<?php echo $v_chpCoutUnitaire; ?>', this.value, <?php echo $id; ?>, '<?php echo $v_table; ?>', '<?php echo $v_chpId; ?>');"/><?php if ($unite == 5) {echo '€/Pièce';} else echo '€/Kg';?>
 					&#160;&#160;&#160;
 					<img class="supprimer_petit" src="images/Supprimer.png" title="Supprimer la ligne" onclick="Supprimer_ligne_param('id-<?php echo $id; ?>', '<?php echo $v_table; ?>', 'liste', 'ligne-<?php echo $id; ?>', '<?php echo $v_chpId; ?>');"/>
 					</div>
