@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <?php
-
+$Coeff_vente = 3;
 if (isset($_GET['recette_id']))
 {
 	$recette_id = $_GET['recette_id'];
@@ -148,24 +148,24 @@ $result_t_recette_technique_base = $bdd->query("select REC_ID, REC_TITRE FROM T_
 $recette_technique_base = $result_t_recette_technique_base->fetchAll(PDO::FETCH_ASSOC);
 
 // Prix achat
-$result_prix_achat = $bdd->query("select round(SUM((SELECT sum(RIN.RIN_QTE*(ING.COUT_UNITAIRE / 1000)) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
-LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
+$result_prix_achat = $bdd->query("select round(SUM((SELECT sum(RIN.RIN_QTE*(ING.COUT_UNITAIRE / (select UNI_COEFF_CONV from T_UNITE where UNI_ID = RIN.UNI_ID))) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID and RIE.RIE_ID=RIN.RIE_ID
 LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
 WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN = 0)
 +
-(SELECT sum(RIN.RIN_QTE*ING.COUT_UNITAIRE) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
-LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID
+(SELECT IFNULL(sum(RIN.RIN_QTE*(ING.COUT_UNITAIRE) / (select UNI_COEFF_CONV from T_UNITE where UNI_ID = RIN.UNI_ID)),0) FROM T_RECETTE_INGREDIENTS_ENTETE RIE
+LEFT JOIN `T_RECETTE_INGREDIENTS` RIN ON RIE.REC_ID=RIN.REC_ID and RIE.RIE_ID=RIN.RIE_ID
 LEFT JOIN T_INGREDIENT ING ON ING.ING_ID=RIN.ING_ID
 WHERE RIE.REC_ID in (
 SELECT REC_ID_LIEN FROM T_RECETTE_INGREDIENTS_ENTETE RIE
 WHERE RIE.REC_ID = ".$recette_id." and RIE.REC_ID_LIEN != 0))) / REC_NB_CONVIVES,2) as cout_unitaire from T_RECETTE where REC_ID=".$recette_id.";");
 $prix_achat = $result_prix_achat->fetch(PDO::FETCH_OBJ);
 
-$result_cout_fabrication = $bdd->query("select round(sum((SELECT COU_VALEUR * 0.25 FROM `T_COUTS` WHERE COU_id = 2)
+$result_cout_fabrication = $bdd->query("select round(sum((SELECT COU_VALEUR * 0.10 FROM `T_COUTS` WHERE COU_id = 2)
 +
 (SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 1)
 +
-(SELECT (COU_VALEUR / 60 * (select REC_TPS_CUISSON + REC_TPS_REPOS + REC_TPS_PREPA from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 4)) / REC_NB_CONVIVES,2) as cout_unitaire_fabrication from T_RECETTE where REC_ID=".$recette_id.";");
+(SELECT (COU_VALEUR / 60 * (select REC_TPS_PREPA from T_RECETTE where REC_ID=".$recette_id.")) FROM `T_COUTS` WHERE COU_id = 4)) / REC_NB_CONVIVES,2) as cout_unitaire_fabrication from T_RECETTE where REC_ID=".$recette_id.";");
 $cout_fabrication = $result_cout_fabrication->fetch(PDO::FETCH_OBJ);
 
 
@@ -557,7 +557,7 @@ $cout_fabrication = $result_cout_fabrication->fetch(PDO::FETCH_OBJ);
 				<br/>
 				Prix de revient : <?php echo $prix_achat->cout_unitaire + $cout_fabrication->cout_unitaire_fabrication;?> € par <?php echo $unite_fabrication_libelle;?>.
 				<br/>
-				Prix de vente : 
+				Prix de vente :  <?php echo ($prix_achat->cout_unitaire + $cout_fabrication->cout_unitaire_fabrication) * $Coeff_vente;?> € par <?php echo $unite_fabrication_libelle;?>
 			</div>	
 		</div>
 		<!-- fin temps preparation -->
